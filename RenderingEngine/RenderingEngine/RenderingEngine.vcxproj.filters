@@ -13,10 +13,24 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="소스 파일\GameSystem">
+      <UniqueIdentifier>{4c754559-8e42-470a-9a4e-f5709819f020}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="소스.cpp">
+    <ClCompile Include="Main_Start.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="GAMESYSTEM.cpp">
+      <Filter>소스 파일\GameSystem</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CRT_DEBUG_.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="GAMESYSTEM.h">
+      <Filter>소스 파일\GameSystem</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,0 +1,16 @@
+Update Log v1.2.0
+
+- MEMORY class
+	- manage all allocated ones
+
+- KEYBOARD class
+	- manage keyboard input
+
+- MOUSE class
+	- manage mouse input
+
+- Add memory test function
+	- now disabled
+
+- Add some Debug Messages
+	- automatically disabled

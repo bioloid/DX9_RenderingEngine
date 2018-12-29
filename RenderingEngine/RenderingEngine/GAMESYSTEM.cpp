@@ -1,11 +1,8 @@
 //	Includes
 //
 #include "GAMESYSTEM.h"
-#include <string>
 
-//	extern Variables
-//
-extern GAMESYSTEM gSystem;
+#include <string>
 
 
 //	Functions
@@ -17,6 +14,26 @@ bool CtrlHandler(DWORD fdwCtrlType);
 
 //	Private Functions
 //
+
+void GAMESYSTEM::Release()
+{
+	console.setFunction("Release");
+	ShowWindow(hwnd, SW_SHOWMINIMIZED);
+
+	memory.Release();
+
+	pEndTime = pEndTime / 1000;
+	while (pEndTime > 0)
+	{
+		console << con::info << con::func << "End Program in " << pEndTime << "sec\n";
+		Sleep(1000);
+		pEndTime = pEndTime - 1;
+	}
+	if (consoleDebug == true)
+		FreeConsole();
+
+}
+
 
 void GAMESYSTEM::IN_Initialize
 (HINSTANCE _hInstance, HINSTANCE _prevInstance, LPSTR _cmdLine, int _showCmd)
@@ -95,12 +112,47 @@ void GAMESYSTEM::IN_Initialize
 	ShowWindow(hwnd, SW_SHOW);
 //	SW_SHOW
 //	SW_SHOWMAXIMIZED
-	console << con::info << con::func << "ShowWindow success" << con::endl;
+	console << con::info << con::func << "ShowWindow succeed" << con::endl;
 
-
+	keyboard.Initialize();
+	mouse.Initialize();
 
 
 	console << con::info << con::func << "GAMESYSTEM Initialize ended" << con::endl;
+}
+void GAMESYSTEM::Test()
+{
+	static int a = 0, b = 1;
+	if (a == 0)
+		cout << a << " : " << memory.Allocate(sizeof(int)*b, 0) << endl;
+	else if (a == 1)
+		cout << a << " : " << memory.Allocate(sizeof(char)*b, 0) << endl;
+	else if (a == 2)
+		cout << a << " : " << memory.Allocate(sizeof(double)*b, 0) << endl;
+	else if (a == 3)
+		cout << a << " : " << memory.Allocate(sizeof(float)*b, 0) << endl;
+	else if (a == 4)
+	{
+		memory.Clear(0);
+		cout << a << " : Clear" << endl;
+	}
+	else if (a == 5)
+		cout << a << " : " << memory.Allocate(sizeof(int)*b, 1) << endl;
+	else if (a == 6)
+		cout << a << " : " << memory.Allocate(sizeof(char)*b, 1) << endl;
+	else if (a == 7)
+		cout << a << " : " << memory.Allocate(sizeof(double)*b, 1) << endl;
+	else if (a == 8)
+		cout << a << " : " << memory.Allocate(sizeof(float)*b, 1) << endl;
+	else if (a == 9)
+	{
+		memory.Clear(1);
+		cout << a << " : Clear" << endl;
+	}
+	a++;
+	b++;
+	b = b % 100;
+	a = a % 10;
 }
 
 
@@ -123,25 +175,19 @@ void GAMESYSTEM::Run()
 			DispatchMessage(&msg);
 		}
 		else {
+			keyboard.KeyEvent();			
+		//	Test();
 		//	Render();
 		}
 	}
 }
 
-void GAMESYSTEM::Release()
+void GAMESYSTEM::EndGame()
 {
-	console.setFunction("Release");
-	ShowWindow(hwnd, SW_SHOWMINIMIZED);
-	pEndTime = pEndTime / 1000;
-	while (pEndTime > 0)
-	{
-		console << con::info << con::func << "End Program in " << pEndTime << "sec\n";
-		Sleep(1000);
-		pEndTime = pEndTime - 1;
-	}
-	if (consoleDebug == true)
-		FreeConsole();
+	runGame = false;
+	Release();
 }
+
 
 
 void GAMESYSTEM::Initialize
@@ -161,42 +207,6 @@ void GAMESYSTEM::Initialize
 }
 
 
-LRESULT CALLBACK GAMESYSTEM::MessageHandler
-(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-	switch (msg)
-	{
-	case WM_DESTROY:
-		runGame = false;
-		break;
-	case WM_CLOSE:
-		runGame = false;
-		break;
-	case WM_CREATE:
-		break;
-	case WM_PAINT:
-		break;
-	case WM_MOUSEWHEEL:
-		break;
-	case WM_MOUSEMOVE:
-		break;
-	case WM_RBUTTONDOWN:
-		break;
-	case WM_LBUTTONDOWN:
-		break;
-	case WM_RBUTTONUP:
-		break;
-	case WM_LBUTTONUP:
-		break;
-	case WM_KEYDOWN:
-		break;
-	case WM_KEYUP:
-		break;
-	default:
-		return DefWindowProc(hwnd, msg, wParam, lParam);
-	}
-	return 0;
-}
 
 //	Other functions
 //

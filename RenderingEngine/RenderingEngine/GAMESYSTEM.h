@@ -8,24 +8,31 @@
 #define CONSOLEDEBUG false
 #endif
 
-
+//	DirectX Includes
+//
 #include <d3d9.h>
 #include <d3dx9.h>
 
-#include <Windows.h>
+//	C++ Includes
+//
 #include <iostream>
 #include <stdexcept>
+
+//	Window API Includes
+//
+#include <Windows.h>
 
 //	Class Includes
 //
 #include "CONSOLE.h"
+#include "MEMORY.h"
+#include "KEYBOARD.h"
+#include "MOUSE.h"
 
-
-//#pragma comment(linker,"/entry:WinMainCRTStartup /subsystem:console")
 class GAMESYSTEM
 {
 private:
-//	Windows API Variables
+//	Windows API
 //	
 	HWND			hwnd;
 	HINSTANCE		hInstance;
@@ -37,7 +44,12 @@ private:
 	MSG				msg;
 	HWND			consoleHND;
 
-//	ETC Variables
+	
+//	DirectX
+//
+
+
+//	ETC
 //
 	unsigned int	check;
 	RECT			windowSize		= { 0, 0, 1280, 720 };
@@ -45,35 +57,46 @@ private:
 	char			pPath[MAX_PATH];	// MAX_PATH from Windows.h Header
 	int				pEndTime		= 3000;	// Engine END time in ms
 	bool			consoleDebug	= CONSOLEDEBUG;
-	bool			debug			= CONSOLEDEBUG;
-
+	bool			debug			= false;
 
 public:
 	bool			runGame = true;
 
-
+private:
 //	ETC Class
 //
-	con::CONSOLE	console;
+	CONSOLE			console;
+	MEMORY			memory;
+	KEYBOARD		keyboard;
+	MOUSE			mouse;
 
-private:
+
 //	Functions
 //
+
+private:
 	void IN_Initialize(HINSTANCE, HINSTANCE, LPSTR, int);
+	void Release();
+	void Test();
+
 
 public:
-
 	GAMESYSTEM();
 	~GAMESYSTEM();
 	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
 	void Initialize(HINSTANCE, HINSTANCE, LPSTR, int, int);
 	void Run();
-	void Release();
+	void EndGame();
 
 
 
 
-	friend class con::CONSOLE;
+	friend class CONSOLE;
 };
+
+
+//	Other Variables
+//
+extern GAMESYSTEM gSystem;
 
 #endif // !__GAMESYSTEM_H__

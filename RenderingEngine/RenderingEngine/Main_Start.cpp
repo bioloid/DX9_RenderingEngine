@@ -20,6 +20,7 @@ GAMESYSTEM gSystem;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR cmdLine, int showCmd)
 {
+//	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	try {
 		gSystem.Initialize(hInstance, prevInstance, cmdLine, showCmd, 8);
 	}
@@ -29,7 +30,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR cmdLine, i
 	gSystem.Run();
 
 
-	gSystem.Release();
+	gSystem.EndGame();
 
 
 	return 0;

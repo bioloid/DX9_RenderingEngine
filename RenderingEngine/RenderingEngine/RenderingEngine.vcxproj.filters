@@ -16,37 +16,76 @@
     <Filter Include="소스 파일\GameSystem">
       <UniqueIdentifier>{4c754559-8e42-470a-9a4e-f5709819f020}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\GameSystem\ConsolePrint">
-      <UniqueIdentifier>{73f043aa-04d8-4b47-9c2b-6b813dc72a9e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="UpdateLog">
       <UniqueIdentifier>{4d3701d2-21f4-4e3a-8dab-a83efb789539}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Main">
+      <UniqueIdentifier>{13a632ca-e983-473c-baf2-d66e40295ea0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameSystem\CONSOLE">
+      <UniqueIdentifier>{73f043aa-04d8-4b47-9c2b-6b813dc72a9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameSystem\KEYBOARD">
+      <UniqueIdentifier>{a9fdec7a-73f7-4151-b213-e788362645ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameSystem\MEMORY">
+      <UniqueIdentifier>{8b2d65c3-d55c-4145-b4ac-f600457ed8f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameSystem\GAMESYSTEM">
+      <UniqueIdentifier>{9601a109-9dbe-4c06-ab01-f2f1fee322a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameSystem\MOUSE">
+      <UniqueIdentifier>{4a16a02b-ada8-4c9f-a864-6c442401b5c1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CONSOLE.cpp">
+      <Filter>소스 파일\GameSystem\CONSOLE</Filter>
+    </ClCompile>
     <ClCompile Include="Main_Start.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="MEMORY.cpp">
+      <Filter>소스 파일\GameSystem\MEMORY</Filter>
+    </ClCompile>
+    <ClCompile Include="KEYBOARD.cpp">
+      <Filter>소스 파일\GameSystem\KEYBOARD</Filter>
     </ClCompile>
     <ClCompile Include="GAMESYSTEM.cpp">
-      <Filter>소스 파일\GameSystem</Filter>
+      <Filter>소스 파일\GameSystem\GAMESYSTEM</Filter>
     </ClCompile>
-    <ClCompile Include="CONSOLE.cpp">
-      <Filter>소스 파일\GameSystem\ConsolePrint</Filter>
+    <ClCompile Include="MessageHandler.cpp">
+      <Filter>소스 파일\GameSystem\GAMESYSTEM</Filter>
+    </ClCompile>
+    <ClCompile Include="MOUSE.cpp">
+      <Filter>소스 파일\GameSystem\MOUSE</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CONSOLE.h">
+      <Filter>소스 파일\GameSystem\CONSOLE</Filter>
+    </ClInclude>
     <ClInclude Include="CRT_DEBUG_.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="GAMESYSTEM.h">
-      <Filter>소스 파일\GameSystem</Filter>
+    <ClInclude Include="MEMORY.h">
+      <Filter>소스 파일\GameSystem\MEMORY</Filter>
     </ClInclude>
-    <ClInclude Include="CONSOLE.h">
-      <Filter>소스 파일\GameSystem\ConsolePrint</Filter>
+    <ClInclude Include="KEYBOARD.h">
+      <Filter>소스 파일\GameSystem\KEYBOARD</Filter>
+    </ClInclude>
+    <ClInclude Include="GAMESYSTEM.h">
+      <Filter>소스 파일\GameSystem\GAMESYSTEM</Filter>
+    </ClInclude>
+    <ClInclude Include="MOUSE.h">
+      <Filter>소스 파일\GameSystem\MOUSE</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="v1.1.0.txt">
+      <Filter>UpdateLog</Filter>
+    </Text>
+    <Text Include="v1.2.0.txt">
       <Filter>UpdateLog</Filter>
     </Text>
   </ItemGroup>

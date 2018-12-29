@@ -16,6 +16,12 @@
     <Filter Include="소스 파일\GameSystem">
       <UniqueIdentifier>{4c754559-8e42-470a-9a4e-f5709819f020}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\GameSystem\ConsolePrint">
+      <UniqueIdentifier>{73f043aa-04d8-4b47-9c2b-6b813dc72a9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UpdateLog">
+      <UniqueIdentifier>{4d3701d2-21f4-4e3a-8dab-a83efb789539}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Start.cpp">
@@ -23,6 +29,9 @@
     </ClCompile>
     <ClCompile Include="GAMESYSTEM.cpp">
       <Filter>소스 파일\GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CONSOLE.cpp">
+      <Filter>소스 파일\GameSystem\ConsolePrint</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -32,5 +41,13 @@
     <ClInclude Include="GAMESYSTEM.h">
       <Filter>소스 파일\GameSystem</Filter>
     </ClInclude>
+    <ClInclude Include="CONSOLE.h">
+      <Filter>소스 파일\GameSystem\ConsolePrint</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="v1.1.0.txt">
+      <Filter>UpdateLog</Filter>
+    </Text>
   </ItemGroup>
 </Project>

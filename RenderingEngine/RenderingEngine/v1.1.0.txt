@@ -1,0 +1,13 @@
+Update Log v1.1.0
+
+- Add CONSOLE Class
+	- << for cout
+		- con::endl, con::func, con::info, con::error
+	- >> for debug option
+
+- __argc, __argv
+	- '-c' option
+		- activate Console
+	- '-d' option
+		- with -c option print all debug messages
+	- When compile with Debug Mode, -c, -d activated automatically

@@ -19,12 +19,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CONSOLE.cpp" />
     <ClCompile Include="GAMESYSTEM.cpp" />
     <ClCompile Include="Main_Start.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CONSOLE.h" />
     <ClInclude Include="CRT_DEBUG_.h" />
     <ClInclude Include="GAMESYSTEM.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="v1.1.0.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

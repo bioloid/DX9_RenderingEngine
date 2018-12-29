@@ -1,6 +1,15 @@
+//	Includes
+//
 #include "GAMESYSTEM.h"
+#include <string>
+
+//	extern Variables
+//
 extern GAMESYSTEM gSystem;
 
+
+//	Functions
+//
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 bool CtrlHandler(DWORD fdwCtrlType);
 
@@ -12,20 +21,47 @@ bool CtrlHandler(DWORD fdwCtrlType);
 void GAMESYSTEM::IN_Initialize
 (HINSTANCE _hInstance, HINSTANCE _prevInstance, LPSTR _cmdLine, int _showCmd)
 {
-	AllocConsole();
-	SetConsoleTitle("Debug Console");
-	consoleHND = FindWindow(NULL, "Debug Console");
-	MoveWindow(consoleHND, windowSize.right + consoleSize.left, consoleSize.top, consoleSize.right, consoleSize.bottom, TRUE);
-	freopen("CONOUT$", "w", stdout);
-	freopen("CONIN$", "r", stdin);
-	freopen("CONERR$", "w", stderr);
-
-	if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE)){
-		throw std::runtime_error("Console Handle Set Error");
+//	Command argc, argv
+//	Filename -c -d
+//
+	if (__argc >= 2)
+	{
+		if (__argv[1] == "-c")
+			consoleDebug = true;
+		if (__argc >= 3)
+		{
+			if (__argv[2] == "-d")
+				debug = true;
+		}
 	}
-	std::cout << "INFO  : Initialize : Console Created" << std::endl;
-	std::cout << "INFO  : Initialize : Initialize Check Passed" << std::endl;
-	std::cout << "INFO  : Initialize : GAMESYSTEM Initialize started" << std::endl;
+
+
+//	Console Allocation
+//	consoleHND : Console Handle
+//
+	if (consoleDebug == true)
+	{
+		console.setFunction("Initialize");
+
+		AllocConsole();
+		SetConsoleTitle("Debug Console");
+		consoleHND = FindWindow(NULL, "Debug Console");
+		MoveWindow(consoleHND, windowSize.right + consoleSize.left, consoleSize.top, consoleSize.right, consoleSize.bottom, TRUE);
+		freopen("CONOUT$", "w", stdout);
+		freopen("CONIN$", "r", stdin);
+		freopen("CONERR$", "w", stderr);
+
+		if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE)) {
+			throw std::runtime_error("Console Handle Set Error");
+		}
+		console << con::info << con::func << "Console Created" << con::endl;
+	}
+	console << con::info << con::func << "Initialize Check Passed" << con::endl;
+	console << con::info << con::func << "GAMESYSTEM Initialize started" << con::endl;
+
+
+//	Window Class Initialization
+//
 
 	hInstance = _hInstance;	prevInstance = _prevInstance;
 	cmdLine = _cmdLine;	showCmd = _showCmd;
@@ -46,23 +82,25 @@ void GAMESYSTEM::IN_Initialize
 	if (!RegisterClass(&wc)) {
 		throw std::runtime_error("RegisterClass failed");
 	}
-	std::cout << "INFO  : Initialize : RegisterClass succeed" << std::endl;
+	console << con::info << con::func << "RegisterClass succeed" << con::endl;
 
 	hwnd = CreateWindow(pName, pName, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, windowSize.right, windowSize.bottom, 0, 0, hInstance, 0);
 	if (!hwnd) {
 		throw std::runtime_error("CreateWindow failed");
 	}
-	std::cout << "INFO  : Initialize : CreateWindow succeed" << std::endl;
+	console << con::info << con::func << "CreateWindow succeed" << con::endl;
 
 	MoveWindow(hwnd, 0, 0, windowSize.right, windowSize.bottom, TRUE);
 
 	ShowWindow(hwnd, SW_SHOW);
 //	SW_SHOW
 //	SW_SHOWMAXIMIZED
+	console << con::info << con::func << "ShowWindow success" << con::endl;
 
 
-	std::cout << "INFO  : Initialize : ShowWindow success" << std::endl;
-	std::cout << "INFO  : Initialize : GAMESYSTEM Initialize ended" << std::endl;
+
+
+	console << con::info << con::func << "GAMESYSTEM Initialize ended" << con::endl;
 }
 
 
@@ -74,8 +112,6 @@ void GAMESYSTEM::IN_Initialize
 GAMESYSTEM::GAMESYSTEM()
 {
 }
-
-
 GAMESYSTEM::~GAMESYSTEM()
 {
 }
@@ -94,15 +130,17 @@ void GAMESYSTEM::Run()
 
 void GAMESYSTEM::Release()
 {
+	console.setFunction("Release");
 	ShowWindow(hwnd, SW_SHOWMINIMIZED);
 	pEndTime = pEndTime / 1000;
 	while (pEndTime > 0)
 	{
-		std::cout << "INFO  : Release : End Program in " << pEndTime << " sec" << std::endl;
+		console << con::info << con::func << "End Program in " << pEndTime << "sec\n";
 		Sleep(1000);
 		pEndTime = pEndTime - 1;
 	}
-	FreeConsole();
+	if (consoleDebug == true)
+		FreeConsole();
 }
 
 
@@ -115,8 +153,8 @@ void GAMESYSTEM::Initialize
 		IN_Initialize(_hInstance, _prevInstance, _cmdLine, _showCmd);
 	}
 	catch (const std::exception &e) {
-		std::cout << "ERROR : Initialize : " << e.what() << std::endl;
-		std::cout << "INFO  : Initialize : End Program in " << pEndTime << "sec" << std::endl;
+		console << con::error << con::func << e.what() << "\n";
+		console << con::info << con::func << "End Program in " << pEndTime << " sec\n";
 		Sleep(pEndTime);
 		throw;
 	}
@@ -131,66 +169,28 @@ LRESULT CALLBACK GAMESYSTEM::MessageHandler
 	case WM_DESTROY:
 		runGame = false;
 		break;
-
 	case WM_CLOSE:
 		runGame = false;
 		break;
-
 	case WM_CREATE:
 		break;
-
 	case WM_PAINT:
-		GetClientRect(hwnd, &windowSize);
 		break;
-
 	case WM_MOUSEWHEEL:
-		/*
-		MouseWheel = mouse.IsMouseWheel(wParam);
-		if (MouseWheel == UP) {
-
-		}
-		else if (MouseWheel == DOWN) {
-
-		}
-
 		break;
-		*/
 	case WM_MOUSEMOVE:
-		/*
-		if (mouse.x < LOWORD(lParam)) {
-			gHandle->camera.rotation(MOUSE_RIGHT, LOWORD(lParam) - mouse.x);
-		}
-		else if (mouse.x > LOWORD(lParam)) {
-			gHandle->camera.rotation(MOUSE_LEFT, mouse.x - LOWORD(lParam));
-		}
-		if (mouse.y < HIWORD(lParam)) {
-			gHandle->camera.rotation(MOUSE_DOWN, HIWORD(lParam) - mouse.y);
-		}
-		else if (mouse.y > HIWORD(lParam)) {
-			gHandle->camera.rotation(MOUSE_UP, mouse.y - HIWORD(lParam));
-		}
-		mouse.x = LOWORD(lParam);
-		mouse.y = HIWORD(lParam);
-		*/
 		break;
-
 	case WM_RBUTTONDOWN:
-	//	mouse.MouseDown(MOUSE_RIGHT_BUTTON, LOWORD(lParam), HIWORD(lParam));
 		break;
 	case WM_LBUTTONDOWN:
-	//	mouse.MouseDown(MOUSE_LEFT_BUTTON, LOWORD(lParam), HIWORD(lParam));
 		break;
 	case WM_RBUTTONUP:
-	//	mouse.MouseUp(MOUSE_RIGHT_BUTTON);
 		break;
 	case WM_LBUTTONUP:
-	//	mouse.MouseUp(MOUSE_LEFT_BUTTON);
 		break;
 	case WM_KEYDOWN:
-	//	input.KeyDown(wParam);
 		break;
 	case WM_KEYUP:
-	//	input.KeyUp(wParam);
 		break;
 	default:
 		return DefWindowProc(hwnd, msg, wParam, lParam);
@@ -200,12 +200,13 @@ LRESULT CALLBACK GAMESYSTEM::MessageHandler
 
 //	Other functions
 //
-
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {		
 	return gSystem.MessageHandler(hwnd, msg, wParam, lParam);
 }
 
+//	Console Event Handler
+//
 bool CtrlHandler(DWORD fdwCtrlType)
 {
 	switch (fdwCtrlType)
@@ -216,14 +217,7 @@ bool CtrlHandler(DWORD fdwCtrlType)
 		gSystem.runGame = false;
 		Sleep(1000*1000);
 		return FALSE;
-/*
-	case CTRL_BREAK_EVENT:
-		std::cout << "CTRL_BREAK_EVENT" << std::endl;
-	case CTRL_LOGOFF_EVENT:
-		std::cout << "CTRL_LOGOFF_EVENT" << std::endl;
-	case CTRL_SHUTDOWN_EVENT:
-		std::cout << "CTRL_SHUTDOWN_EVENT" << std::endl;
-*/
+
 	default:
 		return FALSE; 
 	}

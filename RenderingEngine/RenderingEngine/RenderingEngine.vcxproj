@@ -20,24 +20,33 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CONSOLE.cpp" />
+    <ClCompile Include="CPU.cpp" />
+    <ClCompile Include="FPS.cpp" />
     <ClCompile Include="GAMESYSTEM.cpp" />
     <ClCompile Include="KEYBOARD.cpp" />
     <ClCompile Include="Main_Start.cpp" />
     <ClCompile Include="MEMORY.cpp" />
     <ClCompile Include="MessageHandler.cpp" />
     <ClCompile Include="MOUSE.cpp" />
+    <ClCompile Include="RAM.cpp" />
+    <ClCompile Include="TIME.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CONSOLE.h" />
+    <ClInclude Include="CPU.h" />
     <ClInclude Include="CRT_DEBUG_.h" />
+    <ClInclude Include="FPS.h" />
     <ClInclude Include="GAMESYSTEM.h" />
     <ClInclude Include="KEYBOARD.h" />
     <ClInclude Include="MEMORY.h" />
     <ClInclude Include="MOUSE.h" />
+    <ClInclude Include="RAM.h" />
+    <ClInclude Include="TIME.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="v1.1.0.txt" />
-    <Text Include="v1.2.0.txt" />
+    <Text Include="v1.1.txt" />
+    <Text Include="v1.2.txt" />
+    <Text Include="v1.3.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -113,7 +122,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>

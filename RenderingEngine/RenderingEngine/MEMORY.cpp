@@ -55,6 +55,7 @@ bool MEMORY::Search(void* _data, int mode)
 		else
 			return true;
 	}
+	return false;
 }
 bool MEMORY::Empty(int mode)
 {
@@ -62,6 +63,7 @@ bool MEMORY::Empty(int mode)
 		return address_malloc.empty();
 	if (mode == 1 || mode == -1)
 		return address_new.empty();
+	return false;
 }
 
 

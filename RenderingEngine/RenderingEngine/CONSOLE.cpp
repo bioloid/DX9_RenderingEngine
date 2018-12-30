@@ -1,8 +1,7 @@
 #include "CONSOLE.h"
 #include "GAMESYSTEM.h"
-
 #include <iostream>
-
+extern GAMESYSTEM gSystem;
 
 namespace con
 {
@@ -21,17 +20,59 @@ CONSOLE::~CONSOLE()
 {
 }
 
-void CONSOLE::setFunction(string _function)
+
+//	Console Event Handler
+//
+bool CtrlHandler(DWORD fdwCtrlType)
+{
+	switch (fdwCtrlType)
+	{
+	case CTRL_C_EVENT:
+		return FALSE;
+	case CTRL_CLOSE_EVENT:
+		gSystem.runGame = false;
+		Sleep(1000 * 1000);
+		return FALSE;
+
+	default:
+		return FALSE;
+	}
+}
+
+void CONSOLE::Initialize()
+{
+	if (gSystem.consoleDebug == true)
+	{
+		AllocConsole();
+		SetConsoleTitle("Debug Console");
+		consoleHND = FindWindow(NULL, "Debug Console");
+		MoveWindow(consoleHND, gSystem.windowSize.right + gSystem.consoleSize.left, gSystem.consoleSize.top, gSystem.consoleSize.right, gSystem.consoleSize.bottom, TRUE);
+		freopen("CONOUT$", "w", stdout);
+		freopen("CONIN$", "r", stdin);
+		freopen("CONERR$", "w", stderr);
+
+		if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE)) {
+			throw std::runtime_error("Console Handle Set Error");
+		}
+	}
+}
+void CONSOLE::Release()
+{
+	if (gSystem.consoleDebug == true)
+		FreeConsole();
+}
+
+void CONSOLE::SetFunction(string _function)
 {
 	function_before = function;
 	function = _function;
 }
-void CONSOLE::restoreFunction()
+void CONSOLE::RestoreFunction()
 {
 	function = function_before;
 }
 
-void CONSOLE::print()
+void CONSOLE::Print()
 {
 	if (gSystem.consoleDebug == false)
 		return;
@@ -93,7 +134,7 @@ CONSOLE& CONSOLE::operator<<(con::ENDL_ _data)
 CONSOLE& CONSOLE::operator<<(con::FUNC_ _data)
 {
 	if (gSystem.consoleDebug == true)
-		print();
+		Print();
 	return *this;
 }
 CONSOLE& CONSOLE::operator<<(con::INFO_ _data)
@@ -149,7 +190,7 @@ CONSOLE& CONSOLE::operator>>(con::ENDL_ _data)
 CONSOLE& CONSOLE::operator>>(con::FUNC_ _data)
 {
 	if (gSystem.debug == true)
-		print();
+		Print();
 	return *this;
 }
 CONSOLE& CONSOLE::operator>>(con::INFO_ _data)

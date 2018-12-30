@@ -37,6 +37,24 @@
     <Filter Include="소스 파일\GameSystem\MOUSE">
       <UniqueIdentifier>{4a16a02b-ada8-4c9f-a864-6c442401b5c1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UpdateLog\v1.x">
+      <UniqueIdentifier>{fe4c2ba8-c032-4677-bec6-aee58abb3128}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameSystem\TIME">
+      <UniqueIdentifier>{d8bb1097-f9a3-4315-b8e9-fbbbf911f137}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameSystem\FPS">
+      <UniqueIdentifier>{f7aa806f-4679-4c96-b690-3c0e5390c952}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameSystem\SYSTEMINFO">
+      <UniqueIdentifier>{e0d17ceb-61fd-4e68-85bc-27f1718cacc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameSystem\SYSTEMINFO\CPU">
+      <UniqueIdentifier>{1c6dd03a-647c-4728-916c-6cbbc8252763}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameSystem\SYSTEMINFO\RAM">
+      <UniqueIdentifier>{8ce1acb3-d677-41a3-b72f-00b5704943b2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CONSOLE.cpp">
@@ -60,6 +78,18 @@
     <ClCompile Include="MOUSE.cpp">
       <Filter>소스 파일\GameSystem\MOUSE</Filter>
     </ClCompile>
+    <ClCompile Include="TIME.cpp">
+      <Filter>소스 파일\GameSystem\TIME</Filter>
+    </ClCompile>
+    <ClCompile Include="FPS.cpp">
+      <Filter>소스 파일\GameSystem\FPS</Filter>
+    </ClCompile>
+    <ClCompile Include="CPU.cpp">
+      <Filter>소스 파일\GameSystem\SYSTEMINFO\CPU</Filter>
+    </ClCompile>
+    <ClCompile Include="RAM.cpp">
+      <Filter>소스 파일\GameSystem\SYSTEMINFO\RAM</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CONSOLE.h">
@@ -80,13 +110,28 @@
     <ClInclude Include="MOUSE.h">
       <Filter>소스 파일\GameSystem\MOUSE</Filter>
     </ClInclude>
+    <ClInclude Include="TIME.h">
+      <Filter>소스 파일\GameSystem\TIME</Filter>
+    </ClInclude>
+    <ClInclude Include="FPS.h">
+      <Filter>소스 파일\GameSystem\FPS</Filter>
+    </ClInclude>
+    <ClInclude Include="CPU.h">
+      <Filter>소스 파일\GameSystem\SYSTEMINFO\CPU</Filter>
+    </ClInclude>
+    <ClInclude Include="RAM.h">
+      <Filter>소스 파일\GameSystem\SYSTEMINFO\RAM</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="v1.1.0.txt">
-      <Filter>UpdateLog</Filter>
+    <Text Include="v1.3.txt">
+      <Filter>UpdateLog\v1.x</Filter>
     </Text>
-    <Text Include="v1.2.0.txt">
-      <Filter>UpdateLog</Filter>
+    <Text Include="v1.2.txt">
+      <Filter>UpdateLog\v1.x</Filter>
+    </Text>
+    <Text Include="v1.1.txt">
+      <Filter>UpdateLog\v1.x</Filter>
     </Text>
   </ItemGroup>
 </Project>

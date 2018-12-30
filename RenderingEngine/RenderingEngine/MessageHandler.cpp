@@ -3,7 +3,7 @@
 LRESULT CALLBACK GAMESYSTEM::MessageHandler
 (HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	console.setFunction("MessageHandler");
+	console.SetFunction("MessageHandler");
 	switch (msg)
 	{
 	case WM_DESTROY:
@@ -53,6 +53,6 @@ LRESULT CALLBACK GAMESYSTEM::MessageHandler
 		gSystem.keyboard.KeyUp(wParam);
 		break;
 	}
-	console.restoreFunction();
+	console.RestoreFunction();
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }

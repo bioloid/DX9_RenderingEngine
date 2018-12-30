@@ -1,0 +1,24 @@
+Update Log v1.3.0
+
+==	NEW	 ==
+
+- add DirectX
+	- from now draw all things with DirectX Device
+	- using DirectX Effect (HLSL shader)
+- add TIME class
+
+- add FPS class
+	- use TIME class
+- add CPU class
+
+- add RAM class
+
+- add MSGPrint function
+	- Print TIME, FPS, RAM, CPU usage
+	- Draw with DirectX font
+
+Update Log v1.3.1
+
+==  Bug Fix  ==
+
+- fix some Memory Leak

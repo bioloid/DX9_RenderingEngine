@@ -4,7 +4,7 @@
 
 #include<string>
 #include<Windows.h>
-
+#include<list>
 
 using namespace std;
 
@@ -25,17 +25,30 @@ namespace con
 class CONSOLE
 {
 public:
-	HWND consoleHND;
+	HWND			consoleHND;
 
 
-	string function;
-	string function_before;
+	string			function;
+	string			function_before;
+
+	list<string>	history;
+	list<string>::iterator hisptr;
+	string			userinput;
+	list<string>	outinput;
+	list<string>	tabData;
+
+	void input();
+	void Check();
+
 
 	void Initialize();
 	void Release();
 	void SetFunction(string);
 	void RestoreFunction();
 	void Print();
+
+
+
 
 	CONSOLE& operator<<(int);
 	CONSOLE& operator<<(string);

@@ -1,0 +1,13 @@
+Update Log v1.4
+
+- class CONSOLE
+	- add function input, check, some variables
+	- Check Function is for test function
+		- it will be change in 1.5 update
+
+Update Log v1.4.1
+
+- CONSOLE::input
+	- bug fix
+
+- Memory Leak Checked

@@ -133,5 +133,8 @@
     <Text Include="v1.1.txt">
       <Filter>UpdateLog\v1.x</Filter>
     </Text>
+    <Text Include="v1.4.txt">
+      <Filter>UpdateLog\v1.x</Filter>
+    </Text>
   </ItemGroup>
 </Project>

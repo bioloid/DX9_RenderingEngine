@@ -322,6 +322,7 @@ void GAMESYSTEM::Run()
 			DispatchMessage(&msg);
 		}
 		else {
+			console.input();
 			keyboard.KeyEvent();
 			Render();
 		//	Test();

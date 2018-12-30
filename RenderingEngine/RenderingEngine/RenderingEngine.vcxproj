@@ -47,6 +47,7 @@
     <Text Include="v1.1.txt" />
     <Text Include="v1.2.txt" />
     <Text Include="v1.3.txt" />
+    <Text Include="v1.4.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

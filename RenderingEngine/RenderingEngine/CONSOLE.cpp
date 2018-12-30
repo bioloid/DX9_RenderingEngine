@@ -1,6 +1,8 @@
 #include "CONSOLE.h"
 #include "GAMESYSTEM.h"
 #include <iostream>
+#include <conio.h> //_getch(), _kbhit()
+
 extern GAMESYSTEM gSystem;
 
 namespace con
@@ -39,8 +41,153 @@ bool CtrlHandler(DWORD fdwCtrlType)
 	}
 }
 
+void CONSOLE::input()
+{
+	if (_kbhit())
+	{
+		char data = _getch();
+		if (data == -32) // πÊ«‚≈∞
+		{
+			list<string>::iterator tmp;
+			data = _getch();
+			if (data == 72) // up
+			{
+				if (history.size() > 1)
+				{
+					tmp = hisptr;
+					if (++tmp != history.end())
+					{
+						hisptr++;
+						for (int i = 0; i < userinput.length(); i++)
+							cout << "\b" << " " << "\b";
+						userinput = *hisptr;
+						cout << userinput;
+					}
+				}
+			}
+			else if (data == 80) // down
+			{
+				if (history.size() > 1)
+				{
+					if (hisptr != history.begin())
+					{
+						tmp = hisptr;
+						if (--tmp != history.begin())
+						{
+							hisptr--;
+							for (int i = 0; i < userinput.length(); i++)
+								cout << "\b" << " " << "\b";
+							userinput = *hisptr;
+							cout << userinput;
+						}
+					}
+				}
+			}
+			else if (data == 75) { // left
+			}
+			else if (data == 77) { // right
+			}
+		}
+		else if (data == 13) // enter
+		{
+			if (!userinput.empty())
+			{
+				cout << endl;
+				userinput += '\0';
+				outinput.clear();
+				int start, end, length = userinput.length();
+				for (start = end = 0; start <= length && end <= length; end++)
+				{
+					if (userinput[end] == ' ' || end == length)
+					{
+						string tmp;
+						for (int i = start; i < end; i++)
+							tmp += userinput[i];
+						outinput.push_back(tmp);
+						start = end + 1;
+					}
+				}
+				history.pop_front();
+				history.push_front(userinput);
+				history.push_front(" ");
+				hisptr = history.begin();
+				userinput.clear();
+				Check();
+			}
+		}
+		else if (data == 9) // tab
+		{
+			if (!userinput.empty())
+			{
+				int spacebar = userinput.rfind(" ");
+				int pos;
+			//	cout << spacebar;
+
+				char data[4];
+				data[3] = '\0';
+				for (auto ptr = tabData.begin(); ptr != tabData.end(); ptr++)
+				{
+					for (int i = 0; i < 3; i++)
+						data[i] = (*ptr)[i];
+					
+					pos = userinput.rfind(data);
+					if (pos > spacebar)
+					{
+						int len = userinput.length();
+						for (int i = 0; i < len - spacebar - 1; i++)
+						{
+							cout << "\b" << " " << "\b";
+							userinput.pop_back();
+						}
+						cout << *ptr;
+						userinput += *ptr;
+						break;
+					}
+
+				}
+			}
+		}
+		else if (data == 8) // backspace
+		{
+			if (userinput.length() > 0) {
+				userinput.pop_back();
+				cout << "\b" << " " << "\b";
+			}
+		}
+		else				// normal input, space bar
+		{
+			userinput += data;
+			cout << data;
+		}
+	}
+}
+void CONSOLE::Check()
+{
+	cout << "history" << endl;
+	for (auto ptr = history.begin(); ptr != history.end(); ptr++)
+		cout << *ptr << endl;
+	cout << "outinput" << endl;
+	for (auto ptr = outinput.begin(); ptr != outinput.end(); ptr++)
+		cout << *ptr << endl;
+}
+
+
 void CONSOLE::Initialize()
 {
+	tabData.push_back("camera");
+	tabData.push_back("point");
+	tabData.push_back("solid");
+	tabData.push_back("wireframe");
+	tabData.push_back("cullmode");
+	tabData.push_back("coordinate");
+	tabData.push_back("angle");
+	tabData.push_back("distence");
+	tabData.push_back("speed");
+	tabData.push_back("minimum");
+	tabData.push_back("maximum");
+	history.push_front(" ");
+	hisptr = history.begin();
+
 	if (gSystem.consoleDebug == true)
 	{
 		AllocConsole();

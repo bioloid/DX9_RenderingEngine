@@ -1,9 +1,10 @@
-Update Log v1.5.2
+Update Log v1.5.3
 
 - CONSOLE::Check
 	- add commands
 		- camera
 		- ver
+	- bug fix
 
 - CONSOLE::Initialize
 	- Load data from two text file

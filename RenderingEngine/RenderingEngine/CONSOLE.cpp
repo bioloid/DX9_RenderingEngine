@@ -229,6 +229,10 @@ void CONSOLE::Check()
 		{
 			gSystem.EndGame();
 		}
+		else
+		{
+			cout << endl << checkData["error"].front() << endl;
+		}
 	}
 	else if (count == 2)
 	{
@@ -627,13 +631,7 @@ void CONSOLE::Initialize()
 			tmp_list.clear();
 		}
 	}
-	cout << "CONSOLE CHECK DATA"<<endl;
-	for (auto ptr = checkData.begin(); ptr != checkData.end(); ptr++)
-	{
-		for (auto ptr_ = (*ptr).second.begin(); ptr_ != (*ptr).second.end(); ptr_++)
-			cout << (*ptr).first << " : " << (*ptr_) << endl;
-	}
-	
+
 	file.clear();
 	file.close();
 

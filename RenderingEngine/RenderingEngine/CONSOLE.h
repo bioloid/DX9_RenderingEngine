@@ -27,7 +27,7 @@ class CONSOLE
 public:
 	HWND			consoleHND;
 
-	string defaultPath = "data\\console\\";
+	string defaultPath = "Data\\Console\\";
 	map<string, list<string>> checkData;
 	string			function;
 	string			function_before;

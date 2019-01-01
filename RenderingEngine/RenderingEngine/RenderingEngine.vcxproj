@@ -49,11 +49,12 @@
   <ItemGroup>
     <Text Include="data\console\CONSOLE_CHECK_DATA.txt" />
     <Text Include="data\console\CONSOLE_TAB_DATA.txt" />
-    <Text Include="v1.1.txt" />
-    <Text Include="v1.2.txt" />
-    <Text Include="v1.3.txt" />
-    <Text Include="v1.4.txt" />
-    <Text Include="v1.5.txt" />
+    <Text Include="UpdateLog\v1.x\v1.1.txt" />
+    <Text Include="UpdateLog\v1.x\v1.2.txt" />
+    <Text Include="UpdateLog\v1.x\v1.3.txt" />
+    <Text Include="UpdateLog\v1.x\v1.4.txt" />
+    <Text Include="UpdateLog\v1.x\v1.5.txt" />
+    <Text Include="UpdateLog\v1.x\v1.6.txt" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\shader.fx" />

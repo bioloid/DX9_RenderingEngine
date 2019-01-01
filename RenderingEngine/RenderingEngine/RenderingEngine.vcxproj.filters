@@ -58,6 +58,15 @@
     <Filter Include="소스 파일\GameSystem\CAMERA">
       <UniqueIdentifier>{e48a02a9-4ec0-40d0-85b4-aa3098e33f9b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{8288cf91-9258-4748-92a5-90c6c186d517}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{80b15fb5-f1e5-4b7a-b886-202e0cffb1c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Console">
+      <UniqueIdentifier>{49a3c991-6aef-4c7e-b4ea-5cc6ce8209f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CONSOLE.cpp">
@@ -136,31 +145,34 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="v1.3.txt">
+    <Text Include="UpdateLog\v1.x\v1.1.txt">
       <Filter>UpdateLog\v1.x</Filter>
     </Text>
-    <Text Include="v1.2.txt">
+    <Text Include="UpdateLog\v1.x\v1.2.txt">
       <Filter>UpdateLog\v1.x</Filter>
     </Text>
-    <Text Include="v1.1.txt">
+    <Text Include="UpdateLog\v1.x\v1.3.txt">
       <Filter>UpdateLog\v1.x</Filter>
     </Text>
-    <Text Include="v1.4.txt">
+    <Text Include="UpdateLog\v1.x\v1.4.txt">
       <Filter>UpdateLog\v1.x</Filter>
     </Text>
-    <Text Include="v1.5.txt">
+    <Text Include="UpdateLog\v1.x\v1.5.txt">
       <Filter>UpdateLog\v1.x</Filter>
     </Text>
-    <Text Include="data\console\CONSOLE_TAB_DATA.txt">
-      <Filter>리소스 파일</Filter>
+    <Text Include="UpdateLog\v1.x\v1.6.txt">
+      <Filter>UpdateLog\v1.x</Filter>
     </Text>
     <Text Include="data\console\CONSOLE_CHECK_DATA.txt">
-      <Filter>리소스 파일</Filter>
+      <Filter>Data\Console</Filter>
+    </Text>
+    <Text Include="data\console\CONSOLE_TAB_DATA.txt">
+      <Filter>Data\Console</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\shader.fx">
-      <Filter>리소스 파일</Filter>
+      <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

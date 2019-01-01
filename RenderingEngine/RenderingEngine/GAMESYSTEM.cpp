@@ -41,6 +41,7 @@ void GAMESYSTEM::Render()
 	DrawMSG();
 
 
+
 	device->EndScene();
 	device->Present(0, 0, 0, 0);
 }
@@ -222,6 +223,7 @@ void GAMESYSTEM::IN_D3DInitialize(bool _windowed, D3DDEVTYPE _deviceType)
 		console << con::info << con::func << e.what() << con::endl;
 		throw e;
 	}
+	camera.Initialize();
 
 
 	console << con::info << con::func << "GAMESYSTEM D3DInitialize ended" << con::endl;
@@ -236,7 +238,7 @@ void GAMESYSTEM::IN_D3DEffectInitialize()
 #if _DEBUG
 	shaderflags |= D3DXSHADER_DEBUG;
 #endif
-	D3DXCreateEffectFromFile(device, "shader.fx", NULL, NULL, shaderflags, NULL, &shader, &error);
+	D3DXCreateEffectFromFile(device, "shader\\shader.fx", NULL, NULL, shaderflags, NULL, &shader, &error);
 	if (!shader && error)
 	{
 		int size_ = error->GetBufferSize();
@@ -322,7 +324,7 @@ void GAMESYSTEM::Run()
 			DispatchMessage(&msg);
 		}
 		else {
-			console.input();
+			console.Input();
 			keyboard.KeyEvent();
 			Render();
 		//	Test();

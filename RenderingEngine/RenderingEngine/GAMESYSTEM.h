@@ -33,6 +33,8 @@
 #include "FPS.h"
 #include "CPU.h"
 #include "RAM.h"
+#include "CAMERA.h"
+
 
 class GAMESYSTEM
 {
@@ -54,6 +56,9 @@ private:
 	IDirect3DDevice9*	device			= NULL;
 	ID3DXFont*			font			= NULL;
 	LPD3DXEFFECT		shader			= NULL;
+	D3DXMATRIXA16		worldmatrix;
+	D3DXMATRIXA16		viewmatrix;
+	D3DXMATRIXA16		projmatrix;
 
 
 //	Font
@@ -88,6 +93,7 @@ private:
 	FPS					instfps;
 	CPU					cpu;
 	RAM					ram;
+	CAMERA				camera;
 
 
 
@@ -121,8 +127,10 @@ public:
 
 
 
-
+	friend class KEYBOARD;
 	friend class CONSOLE;
+	friend class CAMERA;
+	friend class MOUSE;
 };
 
 

@@ -16,7 +16,7 @@ public:
 	MOUSE();
 	~MOUSE();
 	void Initialize();
-	int MouseMove(LPARAM);
+	void MouseMove(LPARAM);
 	void MouseDown(WORD, LPARAM);
 	void MouseUp(WORD, LPARAM);
 	bool IsMouseDown(WORD);

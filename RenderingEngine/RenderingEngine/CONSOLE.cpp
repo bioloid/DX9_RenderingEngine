@@ -2,8 +2,10 @@
 #include "GAMESYSTEM.h"
 #include <iostream>
 #include <conio.h> //_getch(), _kbhit()
+#include <fstream>
+#include <stdio.h>
 
-extern GAMESYSTEM gSystem;
+#include "CheckDataDefine.h"
 
 namespace con
 {
@@ -40,8 +42,17 @@ bool CtrlHandler(DWORD fdwCtrlType)
 		return FALSE;
 	}
 }
+bool CONSOLE::IsStr(string _data)
+{
+	for (auto ptr = _data.begin(); ptr != _data.end(); ptr++)
+	{
+		if (*ptr < 48 && *ptr > 57)
+			return true;
+	}
+	return false;
+}
 
-void CONSOLE::input()
+void CONSOLE::Input()
 {
 	if (_kbhit())
 	{
@@ -93,12 +104,15 @@ void CONSOLE::input()
 			if (!userinput.empty())
 			{
 				cout << endl;
+				while (userinput.back() == ' ')
+					userinput.pop_back();
+
 				userinput += '\0';
 				outinput.clear();
 				int start, end, length = userinput.length();
-				for (start = end = 0; start <= length && end <= length; end++)
+				for (start = end = 0; start < length && end < length; end++)
 				{
-					if (userinput[end] == ' ' || end == length)
+					if (userinput[end] == ' ' || userinput[end] == '\0')
 					{
 						string tmp;
 						for (int i = start; i < end; i++)
@@ -107,12 +121,15 @@ void CONSOLE::input()
 						start = end + 1;
 					}
 				}
+				userinput.pop_back();
 				history.pop_front();
 				history.push_front(userinput);
 				history.push_front(" ");
 				hisptr = history.begin();
 				userinput.clear();
 				Check();
+				if (gSystem.runGame == true)
+					cout << ">> ";
 			}
 		}
 		else if (data == 9) // tab
@@ -139,8 +156,9 @@ void CONSOLE::input()
 							cout << "\b" << " " << "\b";
 							userinput.pop_back();
 						}
-						cout << *ptr;
+						cout << *ptr << " ";
 						userinput += *ptr;
+						userinput += " ";
 						break;
 					}
 
@@ -154,6 +172,14 @@ void CONSOLE::input()
 				cout << "\b" << " " << "\b";
 			}
 		}
+		else if (data == 32)
+		{
+			if (userinput.back() != ' ')
+			{
+				userinput += data;
+				cout << data;
+			}
+		}
 		else				// normal input, space bar
 		{
 			userinput += data;
@@ -163,31 +189,346 @@ void CONSOLE::input()
 }
 void CONSOLE::Check()
 {
-	cout << "history" << endl;
-	for (auto ptr = history.begin(); ptr != history.end(); ptr++)
-		cout << *ptr << endl;
-	cout << "outinput" << endl;
-	for (auto ptr = outinput.begin(); ptr != outinput.end(); ptr++)
-		cout << *ptr << endl;
+	if (gSystem.debug == true)
+	{
+		cout << "User Input Info" << endl;
+		cout << "history" << endl;
+		for (auto ptr = history.begin(); ptr != history.end(); ptr++)
+			cout << *ptr << ":" << endl;
+		
+		cout << "outinput" << endl;
+		for (auto ptr = outinput.begin(); ptr != outinput.end(); ptr++)
+			cout << *ptr << ":" << endl;
+	}
+
+	int count = outinput.size();
+	auto ptr = outinput.begin();
+	if (count == 1)
+	{
+		if (*ptr == "ver")
+		{
+			ptr = checkData["ver"].begin();
+			cout << endl << *++ptr << " v" << RENDERING_VER << endl;
+		}
+		else if (*ptr == "camera")
+		{
+			auto printData = checkData["camera"].begin();
+			cout << endl << *printData << " x : " << gSystem.camera.position.x;
+			cout << endl << *printData << " y : " << gSystem.camera.position.y;
+			cout << endl << *printData << " z : " << gSystem.camera.position.z;
+			cout << endl << *++printData << " xyz : " << gSystem.camera.speed.s;
+			cout << endl << *printData << " theta : " << gSystem.camera.speed.th;
+			cout << endl << *printData << " pi : " << gSystem.camera.speed.pi;
+			cout << endl << *++printData << " theta : " << gSystem.camera.angle[0] * 57.296575f;
+			cout << endl << *printData << " pi : " << gSystem.camera.angle[1] * 57.296575f;
+			cout << endl << *++printData << " MAX : " << gSystem.camera.far_;
+			cout << endl << *printData << " MIN : " << gSystem.camera.near_;
+			cout << endl << *++printData << gSystem.camera.fov * 57.296575f << endl;
+		}
+		else if (*ptr == "exit")
+		{
+			gSystem.EndGame();
+		}
+	}
+	else if (count == 2)
+	{
+		if (*ptr == "ver")
+		{
+			if (*++ptr == "-c")
+				cout << endl << *++(++checkData["ver"].begin()) << " v" << CONSOLE_VER << endl;
+			else if (*ptr == "-h")
+				cout << endl << checkData["ver"].front() << endl;
+			else
+				cout << endl << checkData["error"].front() << endl;
+		}
+		else if (*ptr == "camera")
+		{
+			if (*++ptr == "coordinate")
+			{
+				string printData = checkData["camera"].front();
+				cout << endl << printData << " x : " << gSystem.camera.position.x;
+				cout << endl << printData << " y : " << gSystem.camera.position.y;
+				cout << endl << printData << " z : " << gSystem.camera.position.z << endl;
+			}
+			else if (*ptr == "speed")
+			{
+				string printData = *++checkData["camera"].begin();
+				cout << endl << printData << " xyz : " << gSystem.camera.speed.s;
+				cout << endl << printData << " theta : " << gSystem.camera.speed.th;
+				cout << endl << printData << " pi : " << gSystem.camera.speed.pi << endl;
+			}
+			else if (*ptr == "angle")
+			{
+				string printData = *++++checkData["camera"].begin();
+				cout << endl << printData << " theta : " << gSystem.camera.angle[0] * 57.296575f;
+				cout << endl << printData << " pi : " << gSystem.camera.angle[1] * 57.296575f << endl;
+			}
+			else if (*ptr == "distance")
+			{
+				string printData = *++++++checkData["camera"].begin();
+				cout << endl << printData << " MAX : " << gSystem.camera.far_;
+				cout << endl << printData << " MIN : " << gSystem.camera.near_ << endl;
+			}
+			else if (*ptr == "fov")
+			{
+				string printData = *++++++++checkData["camera"].begin();
+				cout << endl << printData << gSystem.camera.fov * 57.296575f << endl;
+			}
+			else if (*ptr == "-h")
+			{
+				string printData = checkData["camera"].back();
+				cout << endl << printData << endl;
+			}
+			else
+			{
+				cout << endl << checkData["error"].front() << endl;
+			}
+		}
+	}
+	else if (count == 3)
+	{
+		if (*ptr == "camera")
+		{
+			if (*++ptr == "fov")
+			{
+				++ptr;
+				gSystem.camera.fov = atof((*ptr).c_str()) / 57.296575f;
+				string printData = *++++++++checkData["camera"].begin();
+				cout << endl << printData << gSystem.camera.fov * 57.296575f << endl;
+			}
+		}
+	}
+	else if (count == 4)
+	{
+		if (*ptr == "camera")
+		{
+			if (*++ptr == "coordinate")
+			{
+				auto tmp = ptr;
+				if (!IsStr(*++++tmp))
+				{ 
+					float data = atof((*tmp).c_str());
+					if (*++ptr == "x")
+						gSystem.camera.position.x = data;
+					else if (*ptr == "y")
+						gSystem.camera.position.y = data;
+					else if (*ptr == "z")
+						gSystem.camera.position.z = data;
+					else
+					{
+						cout << endl << checkData["error"].front() << endl;
+						return;
+					}
+					string printData = checkData["camera"].front();
+					cout << endl << printData << " x : " << gSystem.camera.position.x;
+					cout << endl << printData << " y : " << gSystem.camera.position.y;
+					cout << endl << printData << " z : " << gSystem.camera.position.z << endl;
+				}
+			}
+			else if (*ptr == "speed")
+			{
+				auto tmp = ptr;
+				if (!IsStr(*++++tmp))
+				{
+					float data = atof((*tmp).c_str());
+					if (*++ptr == "xyz")
+						gSystem.camera.speed.s = data;
+					else if (*ptr == "theta")
+						gSystem.camera.speed.th = data;
+					else if (*ptr == "pi")
+						gSystem.camera.speed.pi = data;
+					else
+					{
+						cout << endl << checkData["error"].front() << endl;
+						return;
+					}
+					string printData = *++checkData["camera"].begin();
+					cout << endl << printData << " xyz : " << gSystem.camera.speed.s;
+					cout << endl << printData << " theta : " << gSystem.camera.speed.th;
+					cout << endl << printData << " pi : " << gSystem.camera.speed.pi << endl;
+				}
+				else
+				{
+					cout << endl << checkData["error"].front() << endl;
+					return;
+				}
+			}
+			else if (*ptr == "angle")
+			{
+				if (!IsStr(*++ptr))
+				{
+					float data_1 = atof((*ptr).c_str());
+					if (!IsStr(*++ptr))
+					{
+						float data_2 = atof((*ptr).c_str());
+						gSystem.camera.angle[0] = data_1;
+						gSystem.camera.angle[0] = data_2;
+					}
+					else
+					{
+						cout << endl << checkData["error"].front() << endl;
+						return;
+					}
+				}
+				else
+				{
+					auto tmp = ptr;
+					if (!IsStr(*++++tmp))
+					{
+						float data = atof((*tmp).c_str());
+						if (*++ptr == "theta")
+							gSystem.camera.angle[0] = data;
+						else if (*ptr == "pi")
+							gSystem.camera.angle[1] = data;
+						else
+						{
+							cout << endl << checkData["error"].front() << endl;
+							return;
+						}
+					}
+				}
+				string printData = *++++checkData["camera"].begin();
+				cout << endl << printData << " theta : " << gSystem.camera.angle[0] * 57.296575f;
+				cout << endl << printData << " pi : " << gSystem.camera.angle[1] * 57.296575f << endl;
+			}
+			else if (*ptr == "distance")
+			{
+				if (!IsStr(*++ptr))
+				{
+					float data_1 = atof((*ptr).c_str());
+					if (!IsStr(*++ptr))
+					{
+						float data_2 = atof((*ptr).c_str());
+						gSystem.camera.near_ = data_1;
+						gSystem.camera.far_ = data_2;
+					}
+					else
+					{
+						cout << endl << checkData["error"].front() << endl;
+						return;
+					}
+				}
+				else
+				{
+					auto tmp = ptr;
+					if (!IsStr(*++++tmp))
+					{
+						float data = atof((*tmp).c_str());
+						if (*++ptr == "minimum")
+							gSystem.camera.near_ = data;
+						else if (*ptr == "maximum")
+							gSystem.camera.far_ = data;
+						else
+						{
+							cout << endl << checkData["error"].front() << endl;
+							return;
+						}
+					}
+					else
+					{
+						cout << endl << checkData["error"].front() << endl;
+						return;
+					}
+				}
+				string printData = *++++++checkData["camera"].begin();
+				cout << endl << printData << " MAX : " << gSystem.camera.far_;
+				cout << endl << printData << " MIN : " << gSystem.camera.near_ << endl;
+
+			}
+
+		}
+	}
+	else if (count == 5)
+	{
+		if (*ptr == "camera")
+		{
+			if (*++ptr == "coordinate")
+			{
+				auto tmp = ptr;
+				if (!IsStr(*++tmp))
+				{
+					float data_1 = atof((*tmp).c_str());
+					if (!IsStr(*++tmp))
+					{
+						float data_2 = atof((*tmp).c_str());
+						if (!IsStr(*++tmp))
+						{
+							float data_3 = atof((*tmp).c_str());
+							gSystem.camera.position.x = data_1;
+							gSystem.camera.position.y = data_2;
+							gSystem.camera.position.z = data_3;
+
+							string printData = checkData["camera"].front();
+							cout << endl << printData << " x : " << gSystem.camera.position.x;
+							cout << endl << printData << " y : " << gSystem.camera.position.y;
+							cout << endl << printData << " z : " << gSystem.camera.position.z << endl;
+						}
+						else
+						{
+							cout << endl << checkData["error"].front() << endl;
+							return;
+						}
+					}
+					else
+					{
+						cout << endl << checkData["error"].front() << endl;
+						return;
+					}
+				}
+				else
+				{
+					cout << endl << checkData["error"].front() << endl;
+					return;
+				}
+			}
+			else if (*ptr == "angle")
+			{
+				auto tmp = ptr;
+				if (!IsStr(*++tmp))
+				{
+					float data_1 = atof((*tmp).c_str());
+					if (!IsStr(*++tmp))
+					{
+						float data_2 = atof((*tmp).c_str());
+						if (!IsStr(*++tmp))
+						{
+							float data_3 = atof((*tmp).c_str());
+							gSystem.camera.speed.s = data_1;
+							gSystem.camera.speed.th = data_2;
+							gSystem.camera.speed.pi = data_3;
+
+							string printData = *++checkData["camera"].begin();
+							cout << endl << printData << " xyz : " << gSystem.camera.speed.s;
+							cout << endl << printData << " theta : " << gSystem.camera.speed.th;
+							cout << endl << printData << " pi : " << gSystem.camera.speed.pi << endl;
+						}
+						else
+						{
+							cout << endl << checkData["error"].front() << endl;
+							return;
+						}
+					}
+					else
+					{
+						cout << endl << checkData["error"].front() << endl;
+						return;
+					}
+				}
+				else
+				{
+					cout << endl << checkData["error"].front() << endl;
+					return;
+				}
+			}
+		}
+	}
+	cout << endl;
 }
 
 
 void CONSOLE::Initialize()
 {
-	tabData.push_back("camera");
-	tabData.push_back("point");
-	tabData.push_back("solid");
-	tabData.push_back("wireframe");
-	tabData.push_back("cullmode");
-	tabData.push_back("coordinate");
-	tabData.push_back("angle");
-	tabData.push_back("distence");
-	tabData.push_back("speed");
-	tabData.push_back("minimum");
-	tabData.push_back("maximum");
-	history.push_front(" ");
-	hisptr = history.begin();
-
+	SetFunction("Initialize");
 	if (gSystem.consoleDebug == true)
 	{
 		AllocConsole();
@@ -202,6 +543,103 @@ void CONSOLE::Initialize()
 			throw std::runtime_error("Console Handle Set Error");
 		}
 	}
+
+
+
+//	Read console tab data txt file
+//
+	std::ifstream file;
+	string tmpPath;
+	char input;
+	string fileReadData;
+
+	tmpPath = defaultPath;
+	tmpPath += "CONSOLE_TAB_DATA.txt";
+
+	file.open(tmpPath);
+	if (!file.good())
+	{
+		file.clear();
+		file.close();
+		*this >> con::info >> con::func >> "CONSOLE_TAB_DATA Read failed" >> con::endl;
+		throw;
+	}
+	while (!file.eof())
+	{
+		file >> fileReadData;
+		tabData.push_back(fileReadData);
+	}
+	file.clear();
+	file.close();
+	*this >> con::info >> con::func >> "CONSOLE_TAB_DATA Read succeed" >> con::endl;
+	
+//	Read console check data txt file
+//	
+	tmpPath = defaultPath;
+	tmpPath += "CONSOLE_CHECK_DATA.txt";
+	file.open(tmpPath);
+	if (!file.good())
+	{
+		file.clear();
+		file.close();
+		*this >> con::info >> con::func >> "CONSOLE_TAB_DATA Read failed" >> con::endl;
+		throw;
+	}
+	int num;
+	list<string>		tmp_list;
+	string				fileReadData_;
+	map<string, list<string>> tmp_map;
+	while (!file.eof())
+	{
+		file.get(input);
+		if (input == ':')
+		{
+			file >> num;
+			file >> fileReadData;
+			file.get();
+			for (int i = 0; i < num; i++)
+			{
+				fileReadData_.clear();
+				while (true)
+				{
+					file.get(input);
+					if (input == '\n' || file.eof())
+						break;
+					if (input == '\\')
+					{
+						file.get(input);
+						if (input == '\n')
+							break;
+						if (input == 'n')
+							fileReadData_ += '\n';
+						else
+						{
+							fileReadData_ += '\\';
+							fileReadData_ += input;
+						}
+					}
+					else
+						fileReadData_ += input;
+				}
+				tmp_list.push_back(fileReadData_);
+			}
+			checkData[fileReadData] = tmp_list;
+			tmp_list.clear();
+		}
+	}
+	cout << "CONSOLE CHECK DATA"<<endl;
+	for (auto ptr = checkData.begin(); ptr != checkData.end(); ptr++)
+	{
+		for (auto ptr_ = (*ptr).second.begin(); ptr_ != (*ptr).second.end(); ptr_++)
+			cout << (*ptr).first << " : " << (*ptr_) << endl;
+	}
+	
+	file.clear();
+	file.close();
+
+	history.push_front(" ");
+	hisptr = history.begin();
+	RestoreFunction();
 }
 void CONSOLE::Release()
 {

@@ -1,0 +1,13 @@
+:1 error
+There is no matching parameter\nFor more informations use -h parameter
+:3 ver
+    Command  'ver'\n\n ver    ::  Print Rendering Engine Version\n ver -c ::  Print Console Version\n ver -h ::  Print details of command 'ver'
+Rendering Engine
+Rendering Engine Console
+:6 camera
+coordinate
+speed
+angle
+distance
+fov : 
+    Command  'camera'\n\n camera            :: Print all information about camera\n camera coordinate :: Print camera coordinate\n camera angle      :: Print camera angle\n camera speed      :: Print camera speed\n camera distance   :: Print camera MAX, MIN distance\n camera fov        :: Print camera fov\n camera -h         :: Print details of command 'ver'

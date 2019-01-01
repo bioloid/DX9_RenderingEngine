@@ -39,7 +39,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR cmdLine, i
 		cout << e.what() << endl;
 		return 1;
 	}
-
+	cout << ">> ";
 	gSystem.Run();
 
 

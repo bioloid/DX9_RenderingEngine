@@ -1,0 +1,12 @@
+point
+solid
+wireframe
+cullmode
+camera
+coordinate
+speed
+angle
+distance
+minimum
+maximum
+theta

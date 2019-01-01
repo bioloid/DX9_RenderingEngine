@@ -1,6 +1,5 @@
 #include "MOUSE.h"
-
-
+#include "GAMESYSTEM.h"
 
 MOUSE::MOUSE()
 {
@@ -17,24 +16,29 @@ void MOUSE::Initialize()
 	L = false; R = false;
 }
 
-int MOUSE::MouseMove(LPARAM lParam)
+void MOUSE::MouseMove(LPARAM lParam)
 {
-	int move = NONE;
+	int moveXZ = NONE, moveY = NONE;
+	int moveSize = 0;
 	if (coor.x < LOWORD(lParam)) {
-		move = RIGHT;
+		moveXZ = RIGHT;
+		moveSize = LOWORD(lParam) - coor.x;
 	}
 	else if (coor.x > LOWORD(lParam)) {
-		move = LEFT;
+		moveXZ = LEFT;
+		moveSize = coor.x - LOWORD(lParam);
 	}
 	if (coor.y < HIWORD(lParam)) {
-		move = DOWN;
+		moveY = DOWN;
+		moveSize = HIWORD(lParam) - coor.y;
 	}
 	else if (coor.y > HIWORD(lParam)) {
-		move = UP;
+		moveY = UP;
+		moveSize = coor.y - HIWORD(lParam);
 	}
+	gSystem.camera.rotation(moveXZ, moveY, moveSize);
 	coor.x = LOWORD(lParam);
 	coor.y = HIWORD(lParam);
-	return move;
 }
 
 void MOUSE::MouseDown(WORD data, LPARAM lParam)

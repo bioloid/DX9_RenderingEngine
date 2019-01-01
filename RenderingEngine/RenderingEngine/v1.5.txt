@@ -1,0 +1,15 @@
+Update Log v1.5.2
+
+- CONSOLE::Check
+	- add commands
+		- camera
+		- ver
+
+- CONSOLE::Initialize
+	- Load data from two text file
+
+- CONSOLE::Input
+	- ignore additional spacebars
+	- bug fixed
+- add CAMERA class
+	- manage view of user

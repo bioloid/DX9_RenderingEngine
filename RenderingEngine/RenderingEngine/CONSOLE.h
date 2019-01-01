@@ -1,11 +1,11 @@
 #ifndef __CONSOLE_H__
 #define __CONSOLE_H__
 #define PRINTSIZE 20
-
+#define MAXFILEREAD 256
 #include<string>
 #include<Windows.h>
 #include<list>
-
+#include<map>
 using namespace std;
 
 namespace con
@@ -27,17 +27,19 @@ class CONSOLE
 public:
 	HWND			consoleHND;
 
-
+	string defaultPath = "data\\console\\";
+	map<string, list<string>> checkData;
 	string			function;
 	string			function_before;
 
 	list<string>	history;
 	list<string>::iterator hisptr;
+
 	string			userinput;
 	list<string>	outinput;
 	list<string>	tabData;
 
-	void input();
+	void Input();
 	void Check();
 
 
@@ -46,7 +48,7 @@ public:
 	void SetFunction(string);
 	void RestoreFunction();
 	void Print();
-
+	bool IsStr(string);
 
 
 

@@ -55,6 +55,9 @@
     <Filter Include="소스 파일\GameSystem\SYSTEMINFO\RAM">
       <UniqueIdentifier>{8ce1acb3-d677-41a3-b72f-00b5704943b2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\GameSystem\CAMERA">
+      <UniqueIdentifier>{e48a02a9-4ec0-40d0-85b4-aa3098e33f9b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CONSOLE.cpp">
@@ -90,6 +93,9 @@
     <ClCompile Include="RAM.cpp">
       <Filter>소스 파일\GameSystem\SYSTEMINFO\RAM</Filter>
     </ClCompile>
+    <ClCompile Include="CAMERA.cpp">
+      <Filter>소스 파일\GameSystem\CAMERA</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CONSOLE.h">
@@ -122,6 +128,12 @@
     <ClInclude Include="RAM.h">
       <Filter>소스 파일\GameSystem\SYSTEMINFO\RAM</Filter>
     </ClInclude>
+    <ClInclude Include="CAMERA.h">
+      <Filter>소스 파일\GameSystem\CAMERA</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckDataDefine.h">
+      <Filter>소스 파일\GameSystem\CONSOLE</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="v1.3.txt">
@@ -136,5 +148,19 @@
     <Text Include="v1.4.txt">
       <Filter>UpdateLog\v1.x</Filter>
     </Text>
+    <Text Include="v1.5.txt">
+      <Filter>UpdateLog\v1.x</Filter>
+    </Text>
+    <Text Include="data\console\CONSOLE_TAB_DATA.txt">
+      <Filter>리소스 파일</Filter>
+    </Text>
+    <Text Include="data\console\CONSOLE_CHECK_DATA.txt">
+      <Filter>리소스 파일</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="shader\shader.fx">
+      <Filter>리소스 파일</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

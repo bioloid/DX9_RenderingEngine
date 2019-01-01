@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CAMERA.cpp" />
     <ClCompile Include="CONSOLE.cpp" />
     <ClCompile Include="CPU.cpp" />
     <ClCompile Include="FPS.cpp" />
@@ -32,6 +33,8 @@
     <ClCompile Include="TIME.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CAMERA.h" />
+    <ClInclude Include="CheckDataDefine.h" />
     <ClInclude Include="CONSOLE.h" />
     <ClInclude Include="CPU.h" />
     <ClInclude Include="CRT_DEBUG_.h" />
@@ -44,10 +47,16 @@
     <ClInclude Include="TIME.h" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="data\console\CONSOLE_CHECK_DATA.txt" />
+    <Text Include="data\console\CONSOLE_TAB_DATA.txt" />
     <Text Include="v1.1.txt" />
     <Text Include="v1.2.txt" />
     <Text Include="v1.3.txt" />
     <Text Include="v1.4.txt" />
+    <Text Include="v1.5.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="shader\shader.fx" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -129,8 +138,14 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <SubSystem>NotSet</SubSystem>
+      <SubSystem>Windows</SubSystem>
     </Link>
+    <FxCompile>
+      <ShaderType>Effect</ShaderType>
+    </FxCompile>
+    <FxCompile>
+      <ShaderModel>2.0</ShaderModel>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

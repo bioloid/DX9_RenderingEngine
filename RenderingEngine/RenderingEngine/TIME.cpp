@@ -5,7 +5,6 @@ TIME::TIME()
 {
 }
 
-
 TIME::~TIME()
 {
 }

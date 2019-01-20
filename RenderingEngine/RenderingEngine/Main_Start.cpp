@@ -18,33 +18,35 @@
 //
 GAMESYSTEM gSystem;
 
-#pragma warning(disable:4244)
-#pragma warning(disable:4477)
-
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR cmdLine, int showCmd)
 {
+#ifdef _DEBUG
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	try {
-		gSystem.Initialize(hInstance, prevInstance, cmdLine, showCmd, 8);
+	//	_CrtSetBreakAlloc(469);
+#endif
+	try 
+	{
+		gSystem.Initialize(hInstance, prevInstance, cmdLine, showCmd);
 	}
-	catch (std::exception &e) {
-		cout << e.what() << endl;
+	catch (RUNTIME_ERROR &e) 
+	{
 		return 1;
 	}
-	try {
-		gSystem.D3DInitialize(true, D3DDEVTYPE_HAL, 8);
+	try 
+	{
+		gSystem.D3DInitialize(true, D3DDEVTYPE_HAL);
 	}
-	catch (std::exception &e) {
-		cout << e.what() << endl;
+	catch (RUNTIME_ERROR &e) 
+	{
+		gSystem.Release();
 		return 1;
 	}
+
 	cout << ">> ";
 	gSystem.Run();
-
-
+	gSystem.D3DRelease();
 	gSystem.Release();
-
 
 	return 0;
 }

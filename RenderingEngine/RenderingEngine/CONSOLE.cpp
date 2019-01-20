@@ -7,6 +7,10 @@
 
 #include "CheckDataDefine.h"
 
+
+#pragma warning(disable:4267)
+#pragma warning(disable:4244)
+
 namespace con
 {
 	ENDL_	endl;
@@ -19,11 +23,9 @@ CONSOLE::CONSOLE()
 {
 }
 
-
 CONSOLE::~CONSOLE()
 {
 }
-
 
 //	Console Event Handler
 //
@@ -34,7 +36,7 @@ bool CtrlHandler(DWORD fdwCtrlType)
 	case CTRL_C_EVENT:
 		return FALSE;
 	case CTRL_CLOSE_EVENT:
-		gSystem.runGame = false;
+		gSystem.bRunGame = false;
 		Sleep(1000 * 1000);
 		return FALSE;
 
@@ -128,7 +130,7 @@ void CONSOLE::Input()
 				hisptr = history.begin();
 				userinput.clear();
 				Check();
-				if (gSystem.runGame == true)
+				if (gSystem.bRunGame == true)
 					cout << ">> ";
 			}
 		}
@@ -138,7 +140,7 @@ void CONSOLE::Input()
 			{
 				int spacebar = userinput.rfind(" ");
 				int pos;
-			//	cout << spacebar;
+				//	cout << spacebar;
 
 				char data[4];
 				data[3] = '\0';
@@ -146,7 +148,7 @@ void CONSOLE::Input()
 				{
 					for (int i = 0; i < 3; i++)
 						data[i] = (*ptr)[i];
-					
+
 					pos = userinput.rfind(data);
 					if (pos > spacebar)
 					{
@@ -161,7 +163,6 @@ void CONSOLE::Input()
 						userinput += " ";
 						break;
 					}
-
 				}
 			}
 		}
@@ -189,17 +190,18 @@ void CONSOLE::Input()
 }
 void CONSOLE::Check()
 {
-	if (gSystem.debug == true)
-	{
-		cout << "User Input Info" << endl;
-		cout << "history" << endl;
-		for (auto ptr = history.begin(); ptr != history.end(); ptr++)
-			cout << *ptr << ":" << endl;
-		
-		cout << "outinput" << endl;
-		for (auto ptr = outinput.begin(); ptr != outinput.end(); ptr++)
-			cout << *ptr << ":" << endl;
-	}
+#ifdef CONDEBUG
+	cout << "User Input Info" << endl;
+	cout << "history" << endl;
+	for (auto ptr = history.begin(); ptr != history.end(); ptr++)
+		cout << *ptr << ":" << endl;
+
+	cout << "outinput" << endl;
+	for (auto ptr = outinput.begin(); ptr != outinput.end(); ptr++)
+		cout << *ptr << ":" << endl;
+
+#endif // CONDEBUG
+
 
 	int count = outinput.size();
 	auto ptr = outinput.begin();
@@ -310,7 +312,7 @@ void CONSOLE::Check()
 			{
 				auto tmp = ptr;
 				if (!IsStr(*++++tmp))
-				{ 
+				{
 					float data = atof((*tmp).c_str());
 					if (*++ptr == "x")
 						gSystem.camera.position.x = data;
@@ -437,9 +439,7 @@ void CONSOLE::Check()
 				string printData = *++++++checkData["camera"].begin();
 				cout << endl << printData << " MAX : " << gSystem.camera.far_;
 				cout << endl << printData << " MIN : " << gSystem.camera.near_ << endl;
-
 			}
-
 		}
 	}
 	else if (count == 5)
@@ -526,32 +526,33 @@ void CONSOLE::Check()
 			}
 		}
 	}
+	gSystem.camera.SetPosition();
 	cout << endl;
 }
 
-
 void CONSOLE::Initialize()
 {
-	SetFunction("Initialize");
-	if (gSystem.consoleDebug == true)
+	SetFunction("CONSOLE::Initialize");
+
+	if (gSystem.bConUsage == true)
 	{
 		AllocConsole();
 		SetConsoleTitle("Debug Console");
 		consoleHND = FindWindow(NULL, "Debug Console");
-		MoveWindow(consoleHND, gSystem.windowSize.right + gSystem.consoleSize.left, gSystem.consoleSize.top, gSystem.consoleSize.right, gSystem.consoleSize.bottom, TRUE);
+		MoveWindow(consoleHND, gSystem.winSize.right + gSystem.conSize.left, gSystem.conSize.top, gSystem.conSize.right, gSystem.conSize.bottom, TRUE);
 		freopen("CONOUT$", "w", stdout);
 		freopen("CONIN$", "r", stdin);
 		freopen("CONERR$", "w", stderr);
 
-		if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE)) {
-			throw std::runtime_error("Console Handle Set Error");
+		if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE)) 
+		{
+			gSystem.bConUsage = false;
 		}
 	}
+	*this << con::info << con::func << "console started" << con::endl;
 
-
-
-//	Read console tab data txt file
-//
+	//	Read console tab data txt file
+	//
 	std::ifstream file;
 	string tmpPath;
 	char input;
@@ -559,105 +560,122 @@ void CONSOLE::Initialize()
 
 	tmpPath = defaultPath;
 	tmpPath += "CONSOLE_TAB_DATA.txt";
+	file.open(tmpPath);
 
-	file.open(tmpPath);
-	if (!file.good())
+	if (file.fail())
 	{
 		file.clear();
 		file.close();
-		*this >> con::info >> con::func >> "CONSOLE_TAB_DATA Read failed" >> con::endl;
-		throw;
+		*this << con::error << con::func << "CONSOLE_TAB_DATA.txt open() - failed" << con::endl;
+		*this << con::error << con::func << "console tab function disabled" << con::endl;
 	}
-	while (!file.eof())
+
+	else
 	{
-		file >> fileReadData;
-		tabData.push_back(fileReadData);
-	}
-	file.clear();
-	file.close();
-	*this >> con::info >> con::func >> "CONSOLE_TAB_DATA Read succeed" >> con::endl;
-	
-//	Read console check data txt file
-//	
-	tmpPath = defaultPath;
-	tmpPath += "CONSOLE_CHECK_DATA.txt";
-	file.open(tmpPath);
-	if (!file.good())
-	{
-		file.clear();
-		file.close();
-		*this >> con::info >> con::func >> "CONSOLE_TAB_DATA Read failed" >> con::endl;
-		throw;
-	}
-	int num;
-	list<string>		tmp_list;
-	string				fileReadData_;
-	map<string, list<string>> tmp_map;
-	while (!file.eof())
-	{
-		file.get(input);
-		if (input == ':')
+		while (!file.eof())
 		{
-			file >> num;
 			file >> fileReadData;
-			file.get();
-			for (int i = 0; i < num; i++)
+			tabData.push_back(fileReadData);
+		}
+		file.clear();
+		file.close();
+		*this << con::info << con::func << "tab data load - succeed" << con::endl;
+	}
+
+
+
+	//	Read console check data txt file
+	//
+	file.open(defaultPath + "CONSOLE_CHECK_DATA.txt");
+	if (file.fail())
+	{
+		file.clear();
+		file.close();
+		*this << con::error << con::func << "CONSOLE_CHECK_DATA open() - failed" << con::endl;
+		*this << con::error << con::func << "console is now disabled" << con::endl;
+		gSystem.bConUsage = false;
+		DestroyWindow(consoleHND);
+	}
+
+	else
+	{
+		int num;
+		list<string>		tmp_list;
+		string				fileReadData_;
+		map<string, list<string>> tmp_map;
+		while (!file.eof())
+		{
+			file.get(input);
+			if (input == ':')
 			{
-				fileReadData_.clear();
-				while (true)
+				file >> num;
+				file >> fileReadData;
+				file.get();
+				for (int i = 0; i < num; i++)
 				{
-					file.get(input);
-					if (input == '\n' || file.eof())
-						break;
-					if (input == '\\')
+					fileReadData_.clear();
+					while (true)
 					{
 						file.get(input);
-						if (input == '\n')
+						if (input == '\n' || file.eof())
 							break;
-						if (input == 'n')
-							fileReadData_ += '\n';
-						else
+						if (input == '\\')
 						{
-							fileReadData_ += '\\';
-							fileReadData_ += input;
+							file.get(input);
+							if (input == '\n')
+								break;
+							if (input == 'n')
+								fileReadData_ += '\n';
+							else
+							{
+								fileReadData_ += '\\';
+								fileReadData_ += input;
+							}
 						}
+						else
+							fileReadData_ += input;
 					}
-					else
-						fileReadData_ += input;
+					tmp_list.push_back(fileReadData_);
 				}
-				tmp_list.push_back(fileReadData_);
+				checkData[fileReadData] = tmp_list;
+				tmp_list.clear();
 			}
-			checkData[fileReadData] = tmp_list;
-			tmp_list.clear();
 		}
+		file.clear();
+		file.close();
+		*this << con::info << con::func << "check data load - succeed" << con::endl;
+		history.push_front(" ");
+		*this << con::info << con::func << "console history ready" << con::endl;
+
+		hisptr = history.begin();
 	}
-
-	file.clear();
-	file.close();
-
-	history.push_front(" ");
-	hisptr = history.begin();
 	RestoreFunction();
 }
 void CONSOLE::Release()
 {
-	if (gSystem.consoleDebug == true)
+	if (gSystem.bConUsage == true)
 		FreeConsole();
 }
 
 void CONSOLE::SetFunction(string _function)
 {
-	function_before = function;
-	function = _function;
+	if (gSystem.bConUsage == true)
+	{ 
+		function_before = function;
+		function = _function;
+	}
 }
 void CONSOLE::RestoreFunction()
 {
-	function = function_before;
+	if (gSystem.bConUsage == true)
+	{
+		function = function_before;
+	}
 }
 
-void CONSOLE::Print()
+void CONSOLE::PrintFunctionName()
 {
-	if (gSystem.consoleDebug == false)
+	if (gSystem.bConUsage == false)
 		return;
 
 	if (function.length() <= 0)
@@ -685,118 +703,61 @@ void CONSOLE::Print()
 
 CONSOLE& CONSOLE::operator<<(string _data)
 {
-	if (gSystem.consoleDebug == true)
+	if (gSystem.bConUsage == true)
 		cout << _data;
 	return *this;
 }
 CONSOLE& CONSOLE::operator<<(int _data)
 {
-	if (gSystem.consoleDebug == true)
+	if (gSystem.bConUsage == true)
 		cout << _data;
 	return *this;
-
 }
 CONSOLE& CONSOLE::operator<<(float _data)
 {
-	if (gSystem.consoleDebug == true)
+	if (gSystem.bConUsage == true)
 		cout << _data;
 	return *this;
 }
 CONSOLE& CONSOLE::operator<<(double _data)
 {
-	if (gSystem.consoleDebug == true)
+	if (gSystem.bConUsage == true)
 		cout << _data;
 	return *this;
 }
 CONSOLE& CONSOLE::operator<<(con::ENDL_ _data)
 {
-	if (gSystem.consoleDebug == true)
+	if (gSystem.bConUsage == true)
 		cout << std::endl;
 	return *this;
 }
 CONSOLE& CONSOLE::operator<<(con::FUNC_ _data)
 {
-	if (gSystem.consoleDebug == true)
-		Print();
+	if (gSystem.bConUsage == true)
+		PrintFunctionName();
 	return *this;
 }
 CONSOLE& CONSOLE::operator<<(con::INFO_ _data)
 {
-	if (gSystem.consoleDebug == true)
-		cout << ": INFO ";
+	if (gSystem.bConUsage == true)
+		cout << ":INFO";
 	return *this;
 }
 CONSOLE& CONSOLE::operator<<(con::ERROR_ _data)
 {
-	if (gSystem.consoleDebug == true)
-		cout << ": ERROR";
+	if (gSystem.bConUsage == true)
+		cout << ":ERROR";
 	return *this;
 }
 CONSOLE& CONSOLE::operator<<(con::MSG_ _data)
 {
-	if (gSystem.consoleDebug == true)
-		cout << ": MSG  ";
+	if (gSystem.bConUsage == true)
+		cout << ":MSG ";
 	return *this;
 }
-
-
-CONSOLE& CONSOLE::operator>>(string _data)
+CONSOLE& CONSOLE::operator<<(POINT _data)
 {
-	if (gSystem.debug == true)
-		cout << _data;
-	return *this;
-}
-CONSOLE& CONSOLE::operator>>(int _data)
-{
-	if (gSystem.debug == true)
-		cout << _data;
-	return *this;
-}
-CONSOLE& CONSOLE::operator>>(float _data)
-{
-	if (gSystem.debug == true)
-		cout << _data;
-	return *this;
-}
-CONSOLE& CONSOLE::operator>>(double _data)
-{
-	if (gSystem.debug == true)
-		cout << _data;
-	return *this;
-}
-CONSOLE& CONSOLE::operator>>(con::ENDL_ _data)
-{
-	if (gSystem.debug == true)
-		cout << std::endl;
-	return *this;
-}
-CONSOLE& CONSOLE::operator>>(con::FUNC_ _data)
-{
-	if (gSystem.debug == true)
-		Print();
-	return *this;
-}
-CONSOLE& CONSOLE::operator>>(con::INFO_ _data)
-{
-	if (gSystem.debug == true)
-		cout << ": INFO ";
-	return *this;
-}
-CONSOLE& CONSOLE::operator>>(con::ERROR_ _data)
-{
-	if (gSystem.debug == true)
-		cout << ": ERROR";
-	return *this;
-}
-CONSOLE& CONSOLE::operator>>(con::MSG_ _data)
-{
-	if (gSystem.debug == true)
-		cout << "D: MSG ";
-	return *this;
-}
-CONSOLE& CONSOLE::operator>>(POINT _data)
-{
-	if (gSystem.debug == true)
+	if (gSystem.bConUsage == true)
 		cout << "x : " << _data.x << " y : " << _data.y;
 	return *this;
 }

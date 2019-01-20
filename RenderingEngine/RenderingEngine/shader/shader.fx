@@ -78,6 +78,7 @@ float4 ps_main_vnt(PS_INPUT_VNT Input) : COLOR
     float3 ambient = float3(0.2f, 0.2f, 0.2f);
     float4 albedo = tex2D(DiffuseSampler, Input.mTexCoord);
     float4 factor = float4(ambient + diffuse + specular, 1);
+//    return float4(0.0f, 1.0f, 0.0f, 1.0f);
     return albedo * factor;
 }
 
@@ -107,12 +108,13 @@ VS_OUTPUT_RGBA vs_main_RGBA(VS_INPUT_RGBA input)
 {
     VS_OUTPUT_RGBA output;
     output.mPosition = mul(input.mPosition, gWorldMatrix);
-    float3 lightDir = normalize(output.mPosition.xyz - gWorldLightPosition.xyz); // Light -> mPosition
     float3 worldNormal = mul(input.mNormal, (float3x3) gWorldMatrix);
     worldNormal = normalize(worldNormal); // moved normal vectors
-    float3 viewDir = normalize(output.mPosition.xyz - gWorldCameraPosition.xyz);
 
+    float3 lightDir = normalize(output.mPosition.xyz - gWorldLightPosition.xyz); // Light -> mPosition
+    float3 viewDir = normalize(output.mPosition.xyz - gWorldCameraPosition.xyz);
     output.mViewDir = viewDir; //
+
     output.mDiffuse = dot(-lightDir, worldNormal);
     output.mReflection = reflect(lightDir, worldNormal);
     output.mPosition = mul(output.mPosition, gViewMatrix);
@@ -127,8 +129,25 @@ struct PS_INPUT_RGBA
     float3 mViewDir : TEXCOORD1;
     float3 mReflection : TEXCOORD2;
 };
+
 float4 ps_main_RGBA(PS_INPUT_RGBA input) : COLOR
 {
+    float3 diffuse = saturate(input.mDiffuse);
+    float3 reflection = normalize(input.mReflection);
+    float3 viewDir = normalize(input.mViewDir);
+    float3 specular = 0;
+    if (diffuse.x > 0)
+    {
+        specular = saturate(dot(reflection, -viewDir));
+        specular = pow(specular, 20.0f);
+    }
+    float3 ambient = float3(0.2f, 0.2f, 0.2f);
+
+    float4 factor = float4(ambient + diffuse + specular, 1);
+//    return float4(1.0f, 0.0f, 0.0f, 1.0f);
+    return Diffuse * factor;
+
+    /*
  //   return Diffuse;
     float4 diffuse = float4(saturate(input.mDiffuse), 1);
     float3 reflection = normalize(input.mReflection);
@@ -143,6 +162,7 @@ float4 ps_main_RGBA(PS_INPUT_RGBA input) : COLOR
 //    return float4(1.0f, 0.0f, 0.0f, 1.0f);
 //    return Diffuse;
     return Ambient * ambient_factor + Diffuse * diffuse + Specular * specular;
+*/
 }
 
 

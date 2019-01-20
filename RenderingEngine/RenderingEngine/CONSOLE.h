@@ -1,6 +1,6 @@
 #ifndef __CONSOLE_H__
 #define __CONSOLE_H__
-#define PRINTSIZE 20
+#define PRINTSIZE 26
 #define MAXFILEREAD 256
 #include<string>
 #include<Windows.h>
@@ -42,15 +42,12 @@ public:
 	void Input();
 	void Check();
 
-
 	void Initialize();
 	void Release();
 	void SetFunction(string);
 	void RestoreFunction();
-	void Print();
+	void PrintFunctionName();
 	bool IsStr(string);
-
-
 
 	CONSOLE& operator<<(int);
 	CONSOLE& operator<<(string);
@@ -61,22 +58,10 @@ public:
 	CONSOLE& operator<<(con::INFO_);
 	CONSOLE& operator<<(con::ERROR_);
 	CONSOLE& operator<<(con::MSG_);
-
-	CONSOLE& operator>>(int);
-	CONSOLE& operator>>(string);
-	CONSOLE& operator>>(float);
-	CONSOLE& operator>>(double);
-	CONSOLE& operator>>(con::ENDL_);
-	CONSOLE& operator>>(con::FUNC_);
-	CONSOLE& operator>>(con::INFO_);
-	CONSOLE& operator>>(con::ERROR_);
-	CONSOLE& operator>>(con::MSG_);
-	CONSOLE& operator>>(POINT);
-
+	CONSOLE& operator<<(POINT);
 
 	CONSOLE();
 	~CONSOLE();
 };
-
 
 #endif // !__CONSOLE_H__

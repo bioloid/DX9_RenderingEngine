@@ -3,7 +3,6 @@
 #include <Windows.h>
 #define MAXKEYCOUNT 128
 
-
 class KEYBOARD
 {
 private:

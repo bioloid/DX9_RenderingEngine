@@ -22,12 +22,14 @@
     <ClCompile Include="CAMERA.cpp" />
     <ClCompile Include="CONSOLE.cpp" />
     <ClCompile Include="CPU.cpp" />
+    <ClCompile Include="RUNTIME_ERROR.cpp" />
     <ClCompile Include="FPS.cpp" />
     <ClCompile Include="GAMESYSTEM.cpp" />
     <ClCompile Include="KEYBOARD.cpp" />
     <ClCompile Include="Main_Start.cpp" />
     <ClCompile Include="MEMORY.cpp" />
     <ClCompile Include="MessageHandler.cpp" />
+    <ClCompile Include="MODEL.cpp" />
     <ClCompile Include="MOUSE.cpp" />
     <ClCompile Include="RAM.cpp" />
     <ClCompile Include="TIME.cpp" />
@@ -38,10 +40,12 @@
     <ClInclude Include="CONSOLE.h" />
     <ClInclude Include="CPU.h" />
     <ClInclude Include="CRT_DEBUG_.h" />
+    <ClInclude Include="RUNTIME_ERROR.h" />
     <ClInclude Include="FPS.h" />
     <ClInclude Include="GAMESYSTEM.h" />
     <ClInclude Include="KEYBOARD.h" />
     <ClInclude Include="MEMORY.h" />
+    <ClInclude Include="MODEL.h" />
     <ClInclude Include="MOUSE.h" />
     <ClInclude Include="RAM.h" />
     <ClInclude Include="TIME.h" />
@@ -55,6 +59,7 @@
     <Text Include="UpdateLog\v1.x\v1.4.txt" />
     <Text Include="UpdateLog\v1.x\v1.5.txt" />
     <Text Include="UpdateLog\v1.x\v1.6.txt" />
+    <Text Include="ver.txt" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\shader.fx" />
@@ -118,6 +123,10 @@
     <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -170,11 +179,18 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
     </Link>
+    <FxCompile>
+      <ShaderModel>2.0</ShaderModel>
+      <ShaderType>Effect</ShaderType>
+    </FxCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

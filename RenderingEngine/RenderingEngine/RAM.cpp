@@ -1,11 +1,9 @@
 #include "RAM.h"
 #include <iostream>
 
-
 RAM::RAM()
 {
 }
-
 
 RAM::~RAM()
 {

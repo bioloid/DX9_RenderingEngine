@@ -7,7 +7,6 @@
 #define KEY_Q 4
 #define KEY_E 5
 
-
 #define MOUSE_RIGHT_BUTTON 0
 #define MOUSE_LEFT_BUTTON 1
 
@@ -26,9 +25,8 @@ public:
 	void Initialize();
 	void Move(unsigned int);
 
-	void rotation(int, int, int);
+	void rotation(int, int);
 	void SetPosition();
-
 
 	struct Speed speed;
 	float angle[2]; // in Radian
@@ -37,7 +35,7 @@ public:
 	float near_;
 	float far_;
 	float length;
-	
+
 	D3DXMATRIX V;
 	D3DXMATRIX proj;
 
@@ -47,7 +45,6 @@ public:
 	D3DXVECTOR3 lookx;
 	D3DXVECTOR3 looky;
 	D3DXVECTOR3 lookz;
-
 
 	CAMERA();
 	~CAMERA();

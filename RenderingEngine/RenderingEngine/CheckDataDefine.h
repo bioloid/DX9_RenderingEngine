@@ -4,6 +4,4 @@
 #define CONSOLE_VER 1.1
 #define RENDERING_VER 1.5
 
-
-
 #endif // !__CHECKDATADEFINE_H__

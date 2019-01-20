@@ -3,11 +3,18 @@
 #define MSGPRINTMAXSIZE 128
 
 #ifdef _DEBUG
-#define CONSOLEDEBUG true
+#define CONSOLEUSE true
+#else
+#define CONSOLEUSE false
 #endif
-#ifndef _DEBUG
-#define CONSOLEDEBUG false
+
+
+#ifdef DEBUGCONSOLE
+#define CONDEBUG true
 #endif
+
+#define DEFAULTVER "1.6.2"
+#define DEFAULTBUILDNUMBER 1
 
 //	DirectX Includes
 //
@@ -34,56 +41,57 @@
 #include "CPU.h"
 #include "RAM.h"
 #include "CAMERA.h"
+#include "MODEL.h"
 
+//	Other Includes
+//
+#include "RUNTIME_ERROR.h"
 
 class GAMESYSTEM
 {
 private:
-//	Windows API
-//	
+	//	Windows API
+	//
 	HWND				hwnd;
 	HINSTANCE			hInstance;
 	HINSTANCE			prevInstance;
 	LPSTR				cmdLine;
 	WNDCLASS			wc;
 	int					showCmd;
-	const TCHAR*		pName			= "Rendering Engine";
+	string				pName;
 	MSG					msg;
 
-	
-//	DirectX
-//
-	IDirect3DDevice9*	device			= NULL;
-	ID3DXFont*			font			= NULL;
-	LPD3DXEFFECT		shader			= NULL;
-	D3DXMATRIXA16		worldmatrix;
+	//	DirectX
+	//
+	IDirect3DDevice9*	device = NULL;
+	ID3DXFont*			font = NULL;
+	LPD3DXEFFECT		shader = NULL;
+
 	D3DXMATRIXA16		viewmatrix;
 	D3DXMATRIXA16		projmatrix;
+	DWORD				savedFVF = 0UL;	// MODEL::VertexXYZ::FVF;
+	IDirect3DTexture9**	default_texture = NULL;
+	map<string, IDirect3DTexture9*> texture;
 
-
-//	Font
-//
+	//	Font
+	//
 	char				str[MSGPRINTMAXSIZE];
 	RECT				FontBox;
 
-
-//	ETC
-//
-	unsigned int		check;
-	RECT				windowSize		= { 0, 0, 1280, 720 };
-	RECT				consoleSize		= { 0, 0, 600, 720 };
+	//	ETC
+	//
+	RECT				winSize = { 0, 0, 1280, 720 };
+	RECT				conSize = { 0, 0, 600, 720 };
 	char				pPath[MAX_PATH];	// MAX_PATH from Windows.h Header
-	int					pEndTime		= 3000;	// Engine END time in ms
-	bool				consoleDebug	= CONSOLEDEBUG;
-	bool				debug			= false;
-
+	int					pEndWaitTime = 3000;	// Engine END time in ms
+	bool				bConUsage = CONSOLEUSE;
 
 public:
-	bool				runGame = true;
+	bool				bRunGame = true;
 
 private:
-//	ETC Class
-//
+	//	ETC Class
+	//
 	CONSOLE				console;
 	MEMORY				memory;
 	KEYBOARD			keyboard;
@@ -94,19 +102,15 @@ private:
 	CPU					cpu;
 	RAM					ram;
 	CAMERA				camera;
+	MODEL				test;
 
-
-
-
-//	Functions
-//
-
+	//	Functions
+	//
+public:
+	void Initialize(HINSTANCE, HINSTANCE, LPSTR, int);
+	void D3DInitialize(bool, D3DDEVTYPE);
 private:
-	void IN_Initialize(HINSTANCE, HINSTANCE, LPSTR, int);
-	
-	void IN_D3DInitialize(bool, D3DDEVTYPE);
-	void IN_D3DEffectInitialize();
-	void IN_D3DRelease();
+	void D3DEffectInitialize();
 	void Render();
 
 	void DrawMSG();
@@ -114,30 +118,27 @@ private:
 
 	void Test();
 
-
 public:
 	void Release();
-	GAMESYSTEM();
-	~GAMESYSTEM();
-	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
-	void Initialize(HINSTANCE, HINSTANCE, LPSTR, int, int);
-	void D3DInitialize(bool, D3DDEVTYPE, int);
+	void D3DRelease();
 	void Run();
 	void EndGame();
+	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
+	
+	GAMESYSTEM();
+	~GAMESYSTEM();
 
-
-
+	friend class CPU;
+	friend class MODEL;
 	friend class KEYBOARD;
 	friend class CONSOLE;
 	friend class CAMERA;
 	friend class MOUSE;
+	friend class RUNTIME_ERROR;
 };
-
 
 //	Other Variables
 //
 extern GAMESYSTEM gSystem;
-
-
 
 #endif // !__GAMESYSTEM_H__

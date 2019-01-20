@@ -67,6 +67,12 @@
     <Filter Include="Data\Console">
       <UniqueIdentifier>{49a3c991-6aef-4c7e-b4ea-5cc6ce8209f8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\GameSystem\MODEL">
+      <UniqueIdentifier>{a77b4101-8084-4548-a968-567050de1ad9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameSystem\ERROR">
+      <UniqueIdentifier>{281d5385-8abe-404c-8c66-2169c4eaa4ad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CONSOLE.cpp">
@@ -104,6 +110,12 @@
     </ClCompile>
     <ClCompile Include="CAMERA.cpp">
       <Filter>소스 파일\GameSystem\CAMERA</Filter>
+    </ClCompile>
+    <ClCompile Include="MODEL.cpp">
+      <Filter>소스 파일\GameSystem\MODEL</Filter>
+    </ClCompile>
+    <ClCompile Include="RUNTIME_ERROR.cpp">
+      <Filter>소스 파일\GameSystem\ERROR</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -143,6 +155,12 @@
     <ClInclude Include="CheckDataDefine.h">
       <Filter>소스 파일\GameSystem\CONSOLE</Filter>
     </ClInclude>
+    <ClInclude Include="MODEL.h">
+      <Filter>소스 파일\GameSystem\MODEL</Filter>
+    </ClInclude>
+    <ClInclude Include="RUNTIME_ERROR.h">
+      <Filter>소스 파일\GameSystem\ERROR</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="UpdateLog\v1.x\v1.1.txt">
@@ -168,6 +186,9 @@
     </Text>
     <Text Include="data\console\CONSOLE_TAB_DATA.txt">
       <Filter>Data\Console</Filter>
+    </Text>
+    <Text Include="ver.txt">
+      <Filter>리소스 파일</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>

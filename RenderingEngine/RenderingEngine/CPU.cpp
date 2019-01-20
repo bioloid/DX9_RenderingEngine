@@ -1,9 +1,10 @@
 #include "CPU.h"
 #include <iostream>
+#include "GAMESYSTEM.h"
+#pragma warning(disable:4244)
 CPU::CPU()
 {
 }
-
 
 CPU::~CPU()
 {
@@ -11,23 +12,27 @@ CPU::~CPU()
 
 void CPU::Initialize()
 {
-	PDH_STATUS status; // Initialize the flag indicating whether this object can read the system cpu usage or not. 
-	m_canReadCpu = true; // Create a query object to poll cpu usage. 
+	gSystem.console.SetFunction("CPU::Initialize");
+
+	PDH_STATUS status; // Initialize the flag indicating whether this object can read the system cpu usage or not.
+	m_canReadCpu = true; // Create a query object to poll cpu usage.
 	status = PdhOpenQuery(NULL, 0, &m_queryHandle);
 	if (status != ERROR_SUCCESS)
 	{
 		m_canReadCpu = false;
-		throw std::runtime_error("PdhOpenQuery Error");
-	} // Set query object to poll all cpus in the system. 
+		gSystem.console << con::error << con::func << "PdhOpenQuery error" << con::endl;
+		gSystem.console << con::error << con::func << "CPU info is now disabled" << con::endl;
+
+	} // Set query object to poll all cpus in the system.
 	status = PdhAddCounter(m_queryHandle, TEXT("\\Processor(_Total)\\% processor time"), 0, &m_counterHandle);
 	if (status != ERROR_SUCCESS)
 	{
 		m_canReadCpu = false;
-		throw std::runtime_error("PdhAddCounter Error");
+		gSystem.console << con::error << con::func << "PdhAddCounter error" << con::endl;
+		gSystem.console << con::error << con::func << "CPU info is now disabled" << con::endl;
 	}
 	m_lastSampleTime = GetTickCount();
 	m_cpuUsage = 0;
-
 
 	GetSystemInfo(&sysInfo);
 	numProcessors = sysInfo.dwNumberOfProcessors;
@@ -39,6 +44,7 @@ void CPU::Initialize()
 	GetProcessTimes(self, &ftime, &ftime, &fsys, &fuser);
 	memcpy(&lastSysCPU, &fsys, sizeof(FILETIME));
 	memcpy(&lastUserCPU, &fuser, sizeof(FILETIME));
+	gSystem.console.RestoreFunction();
 }
 void CPU::Release()
 {
@@ -56,8 +62,6 @@ void CPU::Update()
 			PdhCollectQueryData(m_queryHandle);
 			PdhGetFormattedCounterValue(m_counterHandle, PDH_FMT_LONG, NULL, &value);
 			m_cpuUsage = value.longValue;
-
-
 
 			GetSystemTimeAsFileTime(&ftime);
 			memcpy(&now, &ftime, sizeof(FILETIME));

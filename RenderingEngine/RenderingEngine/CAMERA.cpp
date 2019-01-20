@@ -1,12 +1,9 @@
 #include "CAMERA.h"
 #include "GAMESYSTEM.h"
 
-
-
 CAMERA::CAMERA()
 {
 }
-
 
 CAMERA::~CAMERA()
 {
@@ -15,16 +12,16 @@ void CAMERA::Initialize()
 {
 	length = 1.0f; // distance between camera position and target
 
-	speed.s = 1.0f;
-	speed.pi = speed.th = 0.1f;
+	speed.s = 0.01f;
+	speed.pi = speed.th = 0.001f;
 
 	near_ = 1.0f; far_ = 1000.0f;
 
 	fov = 1.047183f;	// 60 degree in radian
 	angle[0] = 1.5707745f; // 90 degree in radian
-	angle[1] = 0.0f; 
+	angle[1] = 0.0f;
 
-	position = { 0.0f, 0.0f, 0.0f };
+	position = { 0.0f, 0.0f, -5.0f };
 	up = { 0.0f, 1.0f, 0.0f };
 
 	CalculateConst();
@@ -71,50 +68,30 @@ void CAMERA::Move(unsigned int _data)
 void CAMERA::SetPosition()
 {
 	target = position + lookx * length;
-	D3DXMatrixIdentity(&gSystem.worldmatrix);
 	D3DXMatrixLookAtLH(&gSystem.viewmatrix, &position, &target, &up);
-	D3DXMatrixPerspectiveFovLH(&gSystem.projmatrix, fov, (float)gSystem.windowSize.right / (float)gSystem.windowSize.bottom, near_, far_);
-	gSystem.shader->SetMatrix("gWorldMatrix", &gSystem.worldmatrix);
+	D3DXMatrixPerspectiveFovLH(&gSystem.projmatrix, fov, (float)gSystem.winSize.right / (float)gSystem.winSize.bottom, near_, far_);
 	gSystem.shader->SetMatrix("gViewMatrix", &gSystem.viewmatrix);
 	gSystem.shader->SetMatrix("gProjectionMatrix", &gSystem.projmatrix);
 }
-void CAMERA::rotation(int _moveXZ, int _moveY, int move_size)
+void CAMERA::rotation(int _moveX, int _moveY)
 {
-	if (gSystem.mouse.IsMouseDown(MOUSE_LEFT_BUTTON) && (_moveY != NONE || _moveXZ != NONE))
+	if (gSystem.mouse.IsMouseDown(MOUSE_LEFT) && (_moveX != 0 || _moveY != 0))
 	{
-		if (_moveXZ != NONE)
+		if (_moveX != 0)
 		{
-			if (_moveXZ == RIGHT)
-			{
-				angle[0] -= speed.th * move_size;
-			}
-			else if (_moveXZ == LEFT)
-			{
-				angle[0] += speed.th * move_size;
-			}
+			angle[0] += speed.th * _moveX;
 		}
-		if (_moveY != NONE)
+		if (_moveY != 0)
 		{
 			if (constant[1][1] >= 0)
 				up.y = 1;
 			else
 				up.y = -1;
 
-			if (_moveY == UP)
-			{
-				angle[1] += speed.pi * move_size;
-			}
-			else if (_moveY == DOWN)
-			{
-				angle[1] -= speed.pi * move_size;
-			}
+			angle[1] += speed.pi * _moveY;
 		}
 		CalculateConst();
-		target = position + lookx * length;
-		D3DXMatrixLookAtLH(&gSystem.viewmatrix, &position, &target, &up);
-		D3DXMatrixPerspectiveFovLH(&gSystem.projmatrix, fov, (float)gSystem.windowSize.right / (float)gSystem.windowSize.bottom, near_, far_);
-		gSystem.shader->SetMatrix("gViewMatrix", &gSystem.viewmatrix);
-		gSystem.shader->SetMatrix("gProjectionMatrix", &gSystem.projmatrix);
+		SetPosition();
 	}
 }
 void CAMERA::CalculateConst()

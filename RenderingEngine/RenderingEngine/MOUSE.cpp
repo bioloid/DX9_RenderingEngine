@@ -1,10 +1,9 @@
 #include "MOUSE.h"
 #include "GAMESYSTEM.h"
-
+#pragma warning (disable:4715)
 MOUSE::MOUSE()
 {
 }
-
 
 MOUSE::~MOUSE()
 {
@@ -18,25 +17,7 @@ void MOUSE::Initialize()
 
 void MOUSE::MouseMove(LPARAM lParam)
 {
-	int moveXZ = NONE, moveY = NONE;
-	int moveSize = 0;
-	if (coor.x < LOWORD(lParam)) {
-		moveXZ = RIGHT;
-		moveSize = LOWORD(lParam) - coor.x;
-	}
-	else if (coor.x > LOWORD(lParam)) {
-		moveXZ = LEFT;
-		moveSize = coor.x - LOWORD(lParam);
-	}
-	if (coor.y < HIWORD(lParam)) {
-		moveY = DOWN;
-		moveSize = HIWORD(lParam) - coor.y;
-	}
-	else if (coor.y > HIWORD(lParam)) {
-		moveY = UP;
-		moveSize = coor.y - HIWORD(lParam);
-	}
-	gSystem.camera.rotation(moveXZ, moveY, moveSize);
+	gSystem.camera.rotation(LOWORD(lParam) - coor.x, HIWORD(lParam) - coor.y);
 	coor.x = LOWORD(lParam);
 	coor.y = HIWORD(lParam);
 }
@@ -45,11 +26,11 @@ void MOUSE::MouseDown(WORD data, LPARAM lParam)
 {
 	coor.x = LOWORD(lParam);
 	coor.y = HIWORD(lParam);
-	if (data == RIGHT) {
+	if (data == MOUSE_RIGHT) {
 		R = true;
 		return;
 	}
-	else if (data == LEFT) {
+	else if (data == MOUSE_LEFT) {
 		L = true;
 		return;
 	}
@@ -58,21 +39,21 @@ void MOUSE::MouseUp(WORD data, LPARAM lParam)
 {
 	coor.x = LOWORD(lParam);
 	coor.y = HIWORD(lParam);
-	if (data == RIGHT) {
+	if (data == MOUSE_RIGHT) {
 		R = false;
 		return;
 	}
-	else if (data == LEFT) {
+	else if (data == MOUSE_LEFT) {
 		L = false;
 		return;
 	}
 }
 bool MOUSE::IsMouseDown(WORD data)
 {
-	if (data == RIGHT) {
+	if (data == MOUSE_RIGHT) {
 		return R;
 	}
-	else if (data == LEFT) {
+	else if (data == MOUSE_LEFT) {
 		return L;
 	}
 }
@@ -84,9 +65,9 @@ POINT MOUSE::MousePosition()
 int MOUSE::IsMouseWheel(WPARAM data)
 {
 	if ((SHORT)HIWORD(data) > 0) {
-		return UP;
+		return MOUSE_UP;
 	}
 	else {
-		return DOWN;
+		return MOUSE_DOWN;
 	}
 }

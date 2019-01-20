@@ -9,7 +9,7 @@ private:
 	std::set<void*> address_malloc;
 public:
 	MEMORY();
-	~MEMORY();	
+	~MEMORY();
 	void* Allocate(size_t size, int mode);
 	void Insert(void* _data, int mode);
 	bool Search(void* _data, int mode);

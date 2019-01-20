@@ -1,3 +1,39 @@
+Update Log v1.6.3
+
+- MODEL class
+	- using ALPHATESTING
+- edit some console messages
+
+- error handling process add
+
+Update Log v1.6.2
+
+- MODEL class
+	- bug fixed
+	- TODO
+		- obj file with no mtl file
+		- shader for obj with no vn or vt
+		- texture with transparent property print error
+- GAMESYSTEM
+	- DEBUGCONSOLE flag
+		- print additional info
+	- ver.txt
+		- read version info
+		- if not exist made new one
+
+
+Update Log v1.6.1
+
+- MODEL class
+	- bug fixed
+	- Read VTN, VN file
+	- Add two shader mode
+	- time : 2.843s	 ->  0.782s ~~ x3.63 (DEBUG)
+		 	 0.609s  ->  0.234s ~~ x2.60 (RELEASE)
+
+
 Update Log v1.6.0
 
-- 
+- MODEL class
+	- Read obj file
+	- Render obj file

@@ -11,10 +11,10 @@ MEMORY::~MEMORY()
 // mode : 0  -> malloc
 //		  1  -> new
 //		 -1  -> All
-void* MEMORY::Allocate(size_t size ,int mode)
+void* MEMORY::Allocate(size_t size, int mode)
 {
 	void* ptr;
-	if (mode == 0){
+	if (mode == 0) {
 		ptr = malloc(size);
 		if (ptr == NULL)
 			return ptr;
@@ -22,7 +22,7 @@ void* MEMORY::Allocate(size_t size ,int mode)
 		return ptr;
 	}
 	else if (mode == 1) {
-		try{
+		try {
 			ptr = new char[size];
 		}
 		catch (std::bad_alloc &e) {
@@ -43,7 +43,7 @@ void MEMORY::Insert(void* _data, int mode)
 }
 bool MEMORY::Search(void* _data, int mode)
 {
-	if (mode == 0 || mode == -1){
+	if (mode == 0 || mode == -1) {
 		if (address_malloc.find(_data) == address_malloc.end())
 			return false;
 		else
@@ -66,10 +66,9 @@ bool MEMORY::Empty(int mode)
 	return false;
 }
 
-
 void MEMORY::Clear(int mode)
 {
-	if (mode == 0 || mode == -1){
+	if (mode == 0 || mode == -1) {
 		for (auto ptr = address_malloc.begin(); ptr != address_malloc.end(); ptr++)
 		{
 			if (*ptr != NULL)
@@ -81,7 +80,7 @@ void MEMORY::Clear(int mode)
 		for (auto ptr = address_new.begin(); ptr != address_new.end(); ptr++)
 		{
 			if (*ptr != NULL)
-				delete[] *ptr;
+				delete[] * ptr;
 		}
 		address_new.clear();
 	}

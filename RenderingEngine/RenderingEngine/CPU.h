@@ -1,7 +1,7 @@
 #ifndef __CPU_H__
 #define __CPU_H__
-#pragma comment(lib, "pdh.lib") 
-#include <pdh.h> 
+#pragma comment(lib, "pdh.lib")
+#include <pdh.h>
 #include "windows.h"
 #define REFRESHTIME 1000
 class CPU
@@ -23,7 +23,6 @@ private:
 	FILETIME ftime, fsys, fuser;
 	ULARGE_INTEGER now, sys, user;
 	float percent;
-
 
 	bool m_canReadCpu;
 	HQUERY m_queryHandle;

@@ -4,7 +4,8 @@ Update Log v1.6.3
 	- using ALPHATESTING
 - edit some console messages
 
-- error handling process add
+- error handling process added
+
 
 Update Log v1.6.2
 
@@ -37,3 +38,4 @@ Update Log v1.6.0
 - MODEL class
 	- Read obj file
 	- Render obj file
+

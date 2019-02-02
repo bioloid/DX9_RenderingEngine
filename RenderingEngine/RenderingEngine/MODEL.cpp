@@ -7,6 +7,7 @@ string MODEL::defaltPath = "Data\\Model\\obj\\";
 
 void MODEL::Initialize(std::string _filename, D3DXMATRIXA16 _position)
 {
+	gSystem.console.SetFunction("MODEL::Initialize");
 	bEnable = true;
 	position = _position;
 	int pos = _filename.find(".obj");
@@ -16,7 +17,7 @@ void MODEL::Initialize(std::string _filename, D3DXMATRIXA16 _position)
 	if (pos >= 0 && pos < _filename.length())
 		fileType = ORM;
 	if (fileType == -1)
-		throw RUNTIME_ERROR(MODLE_LOAD_ERROR);
+		throw RUNTIME_ERROR(MODEL_LOAD_ERROR);
 
 	model_name = _filename;
 	model_name.pop_back();
@@ -30,7 +31,12 @@ void MODEL::Initialize(std::string _filename, D3DXMATRIXA16 _position)
 	else if (fileType == ORM)
 		ReadOrm();
 	else
-		throw RUNTIME_ERROR(MODLE_LOAD_ERROR);
+	{
+		gSystem.console << con::error << con::func << "file type error : " << _filename << con::endl;
+		bEnable = false;
+		throw RUNTIME_ERROR(MODEL_LOAD_ERROR);
+	}
+	gSystem.console.RestoreFunction();
 }
 int MODEL::cStrFind(char* _ori, const char* _search)
 {
@@ -56,6 +62,7 @@ int MODEL::cStrFind(char* _ori, const char* _search)
 
 void MODEL::ReadObj()
 {
+	gSystem.console.SetFunction("MODEL::ReadObj");
 	FILE* objfile;
 	vector<MATRIX3> temp_vertex, temp_normal;
 	vector<MATRIX2> temp_texture;
@@ -70,8 +77,10 @@ void MODEL::ReadObj()
 	objfile = fopen((path + model_name + ".obj").c_str(), "r");
 	if (objfile == NULL)
 	{
-		char error_msg[128] = "obj file Read Error : ";
-		throw runtime_error(error_msg + path + model_name + ".obj");
+		gSystem.console << con::error << con::func << "cannot find file : " << path + model_name + ".obj" << con::endl;
+		gSystem.console << con::error << con::func << "release model : " << model_name + ".obj" << con::endl;
+		bEnable = false;
+		throw RUNTIME_ERROR(MODEL_LOAD_ERROR);
 	}
 
 	while (!feof(objfile))
@@ -99,7 +108,13 @@ void MODEL::ReadObj()
 					break;
 			}
 			if (temp_mesh.mtl == mtl.end())
-				throw runtime_error("mtl name is not found!" + mtl_name);
+			{
+				gSystem.console << con::error << con::func << "cannot find material : " << mtl_name << con::endl;
+				gSystem.console << con::error << con::func << "error line : " << read_line << con::endl;
+				gSystem.console << con::error << con::func << "release model : " << model_name + ".obj" << con::endl;
+				bEnable = false;
+				throw RUNTIME_ERROR(MODEL_LOAD_ERROR);
+			}
 
 			char temp_next_line[128];
 			fgets(temp_next_line, sizeof(temp_next_line), objfile);
@@ -205,10 +220,24 @@ void MODEL::ReadObj()
 			float tmp1, tmp2, tmp3;
 			tmp1 = strtof(read_line + 2, &strtof_end_ptr);
 			if (*strtof_end_ptr == '\n')
-				throw runtime_error("file error");
+			{
+				gSystem.console << con::error << con::func << "obj file error : " << model_name + ".obj" << con::endl;
+				gSystem.console << con::error << con::func << "error line : " << read_line << con::endl;
+				gSystem.console << con::error << con::func << "release model : " << model_name + ".obj" << con::endl;
+				temp_vertex.~vector(); temp_normal.~vector(); temp_texture.~vector();
+				bEnable = false;
+				throw RUNTIME_ERROR(MODEL_LOAD_ERROR);
+			}
 			tmp2 = strtof(strtof_end_ptr, &strtof_end_ptr);
 			if (*strtof_end_ptr == '\n')
-				throw runtime_error("file error");
+			{
+				gSystem.console << con::error << con::func << "obj file error : " << model_name + ".obj" << con::endl;
+				gSystem.console << con::error << con::func << "error line : " << read_line << con::endl;
+				gSystem.console << con::error << con::func << "release model : " << model_name + ".obj" << con::endl;
+				temp_vertex.~vector(); temp_normal.~vector(); temp_texture.~vector();
+				bEnable = false;
+				throw RUNTIME_ERROR(MODEL_LOAD_ERROR);
+			}
 			tmp3 = strtof(strtof_end_ptr, NULL);
 			//	cout << tmp1 << " " << tmp2 << " " << tmp3 << endl;
 			temp_vertex.push_back(MATRIX3(tmp1, tmp2, tmp3*-1.0f));
@@ -218,7 +247,14 @@ void MODEL::ReadObj()
 			float tmp1, tmp2;
 			tmp1 = strtof(read_line + 2, &strtof_end_ptr);
 			if (*strtof_end_ptr == '\n')
-				throw runtime_error("file error");
+			{
+				gSystem.console << con::error << con::func << "obj file error : " << model_name + ".obj" << con::endl;
+				gSystem.console << con::error << con::func << "error line : " << read_line << con::endl;
+				gSystem.console << con::error << con::func << "release model : " << model_name + ".obj" << con::endl;
+				temp_vertex.~vector(); temp_normal.~vector(); temp_texture.~vector();
+				bEnable = false;
+				throw RUNTIME_ERROR(MODEL_LOAD_ERROR);
+			}
 			tmp2 = strtof(strtof_end_ptr, NULL);
 			temp_texture.push_back(MATRIX2(tmp1, 1.0f - tmp2));
 		}
@@ -227,10 +263,24 @@ void MODEL::ReadObj()
 			float tmp1, tmp2, tmp3;
 			tmp1 = strtof(read_line + 2, &strtof_end_ptr);
 			if (*strtof_end_ptr == '\n')
-				throw runtime_error("file error");
+			{
+				gSystem.console << con::error << con::func << "obj file error : " << model_name + ".obj" << con::endl;
+				gSystem.console << con::error << con::func << "error line : " << read_line << con::endl;
+				gSystem.console << con::error << con::func << "release model : " << model_name + ".obj" << con::endl;
+				temp_vertex.~vector(); temp_normal.~vector(); temp_texture.~vector();
+				bEnable = false;
+				throw RUNTIME_ERROR(MODEL_LOAD_ERROR);
+			}
 			tmp2 = strtof(strtof_end_ptr, &strtof_end_ptr);
 			if (*strtof_end_ptr == '\n')
-				throw runtime_error("file error");
+			{
+				gSystem.console << con::error << con::func << "obj file error : " << model_name + ".obj" << con::endl;
+				gSystem.console << con::error << con::func << "error line : " << read_line << con::endl;
+				gSystem.console << con::error << con::func << "release model : " << model_name + ".obj" << con::endl;
+				temp_vertex.~vector(); temp_normal.~vector(); temp_texture.~vector();
+				bEnable = false;
+				throw RUNTIME_ERROR(MODEL_LOAD_ERROR);
+			}
 			tmp3 = strtof(strtof_end_ptr, NULL);
 			temp_normal.push_back(MATRIX3(tmp1, tmp2, tmp3*-1.0f));
 		}
@@ -246,9 +296,6 @@ void MODEL::ReadObj()
 		if (cStrFind(read_line, "usemtl ") == 0)
 			break;
 	}
-	int tmp3, tmp4;
-	int tmpaaa = 0;
-	tmp3 = tmp4 = 0;
 	for (auto meshPtr = mesh.begin(); meshPtr != mesh.end(); meshPtr++)
 	{
 		if (meshPtr->FVF == VertexXYZTEXNOR::FVF)
@@ -257,8 +304,11 @@ void MODEL::ReadObj()
 			gSystem.device->CreateVertexBuffer(meshPtr->faceCount * 3 * sizeof(VertexXYZTEXNOR), D3DUSAGE_WRITEONLY, VertexXYZTEXNOR::FVF, D3DPOOL_MANAGED, &meshPtr->VB, 0);
 			if (meshPtr->VB == NULL)
 			{
-				gSystem.console << "MODLE_LOAD_ERROR";
-				throw RUNTIME_ERROR(MODLE_LOAD_ERROR);
+				gSystem.console << con::error << con::func << "CreateVertexBuffer() - failed" << con::endl;
+				gSystem.console << con::error << con::func << "release model : " << model_name + ".obj" << con::endl;
+				temp_vertex.~vector(); temp_normal.~vector(); temp_texture.~vector();
+				bEnable = false;
+				throw RUNTIME_ERROR(MODEL_LOAD_ERROR);
 			}
 			meshPtr->VB->Lock(0, 0, (void**)&data_, 0);
 			int data_count = 0;
@@ -340,7 +390,13 @@ void MODEL::ReadObj()
 			VertexXYZNOR* data_;
 			gSystem.device->CreateVertexBuffer(meshPtr->faceCount * 3 * sizeof(VertexXYZNOR), D3DUSAGE_WRITEONLY, meshPtr->FVF, D3DPOOL_MANAGED, &meshPtr->VB, 0);
 			if (meshPtr->VB == NULL)
-				throw runtime_error("Buffer Creation Error!");
+			{
+				gSystem.console << con::error << con::func << "CreateVertexBuffer() - failed" << con::endl;
+				gSystem.console << con::error << con::func << "release model : " << model_name + ".obj" << con::endl;
+				temp_vertex.~vector(); temp_normal.~vector(); temp_texture.~vector();
+				bEnable = false;
+				throw RUNTIME_ERROR(MODEL_LOAD_ERROR);
+			}
 			meshPtr->VB->Lock(0, 0, (void**)&data_, 0);
 			int data_count = 0;
 			while (!feof(objfile))
@@ -417,12 +473,17 @@ void MODEL::ReadObj()
 			VertexXYZTEX* data_;
 			gSystem.device->CreateVertexBuffer(meshPtr->faceCount * 3 * sizeof(VertexXYZTEX), D3DUSAGE_WRITEONLY, meshPtr->FVF, D3DPOOL_MANAGED, &meshPtr->VB, 0);
 			if (meshPtr->VB == NULL)
-				throw runtime_error("Buffer Creation Error!");
+			{
+				gSystem.console << con::error << con::func << "CreateVertexBuffer() - failed" << con::endl;
+				gSystem.console << con::error << con::func << "release model : " << model_name + ".obj" << con::endl;
+				temp_vertex.~vector(); temp_normal.~vector(); temp_texture.~vector();
+				bEnable = false;
+				throw RUNTIME_ERROR(MODEL_LOAD_ERROR);
+			}
 			meshPtr->VB->Lock(0, 0, (void**)&data_, 0);
 			int data_count = 0;
 			while (!feof(objfile))
 			{
-				tmpaaa = 0;
 				fgets(read_line, sizeof(read_line), objfile);
 				if (cStrFind(read_line, "f ") == 0)
 				{
@@ -460,14 +521,6 @@ void MODEL::ReadObj()
 							}
 							if (read_line[i] == '\n' || feof(objfile))
 							{
-								if (tmpaaa > 6)
-								{
-									cout << tmpaaa << " " << read_line << endl;
-									tmp4++;
-								}
-								else
-									tmp3++;
-								tmpaaa = 0;
 								break;
 							}
 						}
@@ -491,12 +544,17 @@ void MODEL::ReadObj()
 			VertexXYZ* data_;
 			gSystem.device->CreateVertexBuffer(meshPtr->faceCount * 3 * sizeof(VertexXYZ), D3DUSAGE_WRITEONLY, meshPtr->FVF, D3DPOOL_MANAGED, &meshPtr->VB, 0);
 			if (meshPtr->VB == NULL)
-				throw runtime_error("Buffer Creation Error!");
+			{
+				gSystem.console << con::error << con::func << "CreateVertexBuffer() - failed" << con::endl;
+				gSystem.console << con::error << con::func << "release model : " << model_name + ".obj" << con::endl;
+				temp_vertex.~vector(); temp_normal.~vector(); temp_texture.~vector();
+				bEnable = false;
+				throw RUNTIME_ERROR(MODEL_LOAD_ERROR);
+			}
 			meshPtr->VB->Lock(0, 0, (void**)&data_, 0);
 			int data_count = 0;
 			while (!feof(objfile))
 			{
-				tmpaaa = 0;
 				fgets(read_line, sizeof(read_line), objfile);
 				if (cStrFind(read_line, "f ") == 0)
 				{
@@ -531,14 +589,6 @@ void MODEL::ReadObj()
 							}
 							if (read_line[i] == '\n' || feof(objfile))
 							{
-								if (tmpaaa > 6)
-								{
-									cout << tmpaaa << " " << read_line << endl;
-									tmp4++;
-								}
-								else
-									tmp3++;
-								tmpaaa = 0;
 								break;
 							}
 						}
@@ -558,7 +608,14 @@ void MODEL::ReadObj()
 			}
 		}
 		else
-			throw runtime_error("FVF Setting Error!");
+		{
+			gSystem.console << con::error << con::func << "there is no matching FVF" << con::endl;
+			gSystem.console << con::error << con::func << "error FVF : " << (int)meshPtr->FVF << con::endl;
+			gSystem.console << con::error << con::func << "release model : " << model_name + ".obj" << con::endl;
+			temp_vertex.~vector(); temp_normal.~vector(); temp_texture.~vector();
+			bEnable = false;
+			throw RUNTIME_ERROR(MODEL_LOAD_ERROR);
+		}
 	}
 	fclose(objfile);
 
@@ -585,6 +642,7 @@ void MODEL::ReadObj()
 		cout << "mtl name : " << *p->name;
 		cout << "mtl texture : " << p->texture << endl;
 	}
+	gSystem.console.RestoreFunction();
 }
 void MODEL::ReadFace(char* readLine)
 {
@@ -625,6 +683,7 @@ void MODEL::ReadMtl(string _mtlFileName)
 	if (mtlfile == NULL)
 	{
 		char error_msg[] = "mtl file Read Error : ";
+		bEnable = false;
 		throw runtime_error(error_msg + _mtlFileName);
 	}
 
@@ -698,13 +757,78 @@ void MODEL::Move(D3DXMATRIXA16 _position)
 {
 	position = _position;
 }
+
+void MODEL::Test()
+{
+	if (bEnable)
+	{
+		gSystem.shader->SetMatrix("gMatWorld", &position);
+
+		for (auto ptr = mesh.begin(); ptr != mesh.end(); ptr++)
+		{
+			if (gSystem.savedFVF != ptr->FVF)
+			{
+				gSystem.device->SetFVF(ptr->FVF);
+				gSystem.savedFVF = ptr->FVF;
+			}
+			if (ptr->FVF == VertexXYZTEXNOR::FVF)
+				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZTEXNOR));
+
+			else if (ptr->FVF == VertexXYZ::FVF)
+				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZ));
+
+			else if (ptr->FVF == VertexXYZNOR::FVF)
+				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZNOR));
+
+			else if (ptr->FVF == VertexXYZTEX::FVF)
+				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZTEX));
+			else
+				cout << "error";
+
+			gSystem.device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, ptr->faceCount);
+		}
+	}
+}
+
+void MODEL::ShadowRender()
+{
+	if (bEnable)
+	{
+		gSystem.shadow->SetMatrix("gMatWorld", &position);
+
+		for (auto ptr = mesh.begin(); ptr != mesh.end(); ptr++)
+		{
+			if (gSystem.savedFVF != ptr->FVF)
+			{
+				gSystem.device->SetFVF(ptr->FVF);
+				gSystem.savedFVF = ptr->FVF;
+			}
+			gSystem.shadow->SetTexture("gMainTexture", *(ptr->mtl->texture));
+			gSystem.shadow->CommitChanges();
+
+			if (ptr->FVF == VertexXYZTEXNOR::FVF)
+				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZTEXNOR));
+
+			else if (ptr->FVF == VertexXYZ::FVF)
+				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZ));
+
+			else if (ptr->FVF == VertexXYZNOR::FVF)
+				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZNOR));
+
+			else if (ptr->FVF == VertexXYZTEX::FVF)
+				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZTEX));
+			else
+				cout << "error";
+			gSystem.device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, ptr->faceCount);
+		}
+	}
+}
 void MODEL::Render()
 {
 	if (bEnable)
 	{
-		gSystem.shader->SetMatrix("gWorldMatrix", &position);
+		gSystem.shader->SetMatrix("gMatWorld", &position);
 
-		UINT numPasses;
 		for (auto ptr = mesh.begin(); ptr != mesh.end(); ptr++)
 		{
 			if (gSystem.savedFVF != ptr->FVF)
@@ -713,60 +837,48 @@ void MODEL::Render()
 				gSystem.savedFVF = ptr->FVF;
 			}
 
+			gSystem.shader->SetTechnique("VTN");
+
+			gSystem.shader->SetVector("Ambient", &ptr->mtl->material.ambient);
+			gSystem.shader->SetVector("Diffuse", &ptr->mtl->material.diffuse);
+			gSystem.shader->SetVector("Specular", &ptr->mtl->material.specular);
+			gSystem.shader->SetTexture("DiffuseTexture", *(ptr->mtl->texture));
+			gSystem.shader->CommitChanges();
+
 			if (ptr->FVF == VertexXYZTEXNOR::FVF)
-				gSystem.shader->SetTechnique("VTN");
+				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZTEXNOR));
+
+			else if (ptr->FVF == VertexXYZ::FVF)
+				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZ));
+
 			else if (ptr->FVF == VertexXYZNOR::FVF)
-				gSystem.shader->SetTechnique("RGBA");
+				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZNOR));
+
+			else if (ptr->FVF == VertexXYZTEX::FVF)
+				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZTEX));
 			else
-				gSystem.shader->SetTechnique("RGBA");
-
-			gSystem.shader->Begin(&numPasses, NULL);
-			{
-				for (UINT i = 0; i < numPasses; i++)
-				{
-					gSystem.shader->BeginPass(i);
-					{
-						gSystem.shader->SetVector("Ambient", &ptr->mtl->material.ambient);
-						gSystem.shader->SetVector("Diffuse", &ptr->mtl->material.diffuse);
-						gSystem.shader->SetVector("Specular", &ptr->mtl->material.specular);
-						gSystem.shader->SetTexture("DiffuseMap_Tex", *(ptr->mtl->texture));
-						gSystem.shader->CommitChanges();
-
-						if (ptr->FVF == VertexXYZTEXNOR::FVF)
-							gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZTEXNOR));
-
-						else if (ptr->FVF == VertexXYZ::FVF)
-							gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZ));
-
-						else if (ptr->FVF == VertexXYZNOR::FVF)
-							gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZNOR));
-
-						else if (ptr->FVF == VertexXYZTEX::FVF)
-							gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZTEX));
-						else
-							cout << "err";
-					
-						gSystem.device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, ptr->faceCount);
-					}
-					gSystem.shader->EndPass();
-				}
-			}
-			gSystem.shader->End();
+				cout << "error";
+		
+			gSystem.device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, ptr->faceCount);
 		}
 	}
 }
 void MODEL::Release()
 {
-	for (auto ptr = mesh.begin(); ptr != mesh.end(); ptr++)
+	if (!mesh.empty())
 	{
-		if (ptr->VB != NULL)
-			ptr->VB->Release();
+		for (auto ptr = mesh.begin(); ptr != mesh.end(); ptr++)
+		{
+			Release_<IDirect3DVertexBuffer9*>(ptr->VB);
+		}
+
 	}
-	for (auto ptr = mtl.begin(); ptr != mtl.end(); ptr++)
+	if (!mtl.empty())
 	{
-		if (ptr->name != NULL)
-			delete ptr->name;
+		for (auto ptr = mtl.begin(); ptr != mtl.end(); ptr++)
+		{
+			if (ptr->name != NULL)
+				delete ptr->name;
+		}
 	}
-	mesh.~vector();
-	mtl.~vector();
 }

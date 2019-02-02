@@ -1,0 +1,96 @@
+struct LIGHT
+{
+    float4 position;
+    float4 lookTo;
+    float4 color;
+};
+struct VInput
+{
+    float4 Position : POSITION;
+    float3 Normal : NORMAL;
+    float2 UV : TEXCOORD0;
+};
+
+struct VOutput
+{
+    float4 Position : POSITION;
+    float2 UV : TEXCOORD0;
+    float3 Diffuse : TEXCOORD1;
+    float3 ViewDir : TEXCOORD2;
+    float3 Reflection : TEXCOORD3;
+};
+
+struct PInput
+{
+    float2 UV : TEXCOORD0;
+    float3 Diffuse : TEXCOORD1;
+    float3 ViewDir : TEXCOORD2;
+    float3 Reflection : TEXCOORD3;
+};
+
+
+
+float4x4 WorldMatrix;
+float4x4 ViewProjectionMatrix;
+float4x4 LightViewProjectionMatrix;
+float4 CameraPosition;
+
+LIGHT light_0;
+texture MainTexture;
+texture BlurTexture;
+
+sampler2D MainSampler = sampler_state
+{
+    Texture = (MainTexture);
+};
+
+sampler2D BlurSampler = sampler_state
+{
+    Texture = (BlurTexture);
+};
+
+VOutput mainVertex(VInput Input)
+{
+    VOutput Output;
+    float3 worldNormal, lightDir;
+    Output.UV = Input.UV;
+    Output.Position = mul(Input.Position, WorldMatrix);
+    worldNormal = normalize(mul(Input.Normal, (float3x3) WorldMatrix));
+    lightDir = normalize(light_0.lookTo - light_0.position);
+    Output.ViewDir = normalize(Output.Position.xyz - CameraPosition.xyz);
+
+    Output.Position = mul(Output.Position, ViewProjectionMatrix);
+    Output.Diffuse = dot(-lightDir, worldNormal);
+    Output.Reflection = reflect(lightDir, worldNormal);
+
+    return Output;
+}
+
+float4 mainPixel(PInput Input) : COLOR
+{
+    float4 mainTextureColor = tex2D(MainSampler, Input.UV);
+    float3 ambient = float3(0.2f, 0.2f, 0.2f);
+    float3 diffuse = saturate(Input.Diffuse);
+    float3 reflection = normalize(Input.Reflection);
+    float3 specular = 0;
+    if (diffuse.x > 0)
+    {
+        specular = saturate(dot(reflection, -normalize(Input.ViewDir)));
+        specular = pow(specular, 20.0f);
+    }
+    specular *= 0.5;
+    float4 shadowDepth = tex2D(BlurSampler, Input.UV);
+    return float4((ambient + diffuse + specular)
+    * mainTextureColor.rgb * shadowDepth.rgb, mainTextureColor.w);
+}
+
+
+
+technique Main
+{
+    pass Pass_0
+    {
+        VertexShader = compile vs_2_0 mainVertex();
+        PixelShader = compile ps_2_0 mainPixel();
+    }
+}

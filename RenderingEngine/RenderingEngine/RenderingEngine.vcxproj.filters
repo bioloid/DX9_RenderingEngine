@@ -73,6 +73,12 @@
     <Filter Include="소스 파일\GameSystem\ERROR">
       <UniqueIdentifier>{281d5385-8abe-404c-8c66-2169c4eaa4ad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\GameSystem\GAME">
+      <UniqueIdentifier>{1484c686-b535-49dd-856d-ac4293fae51c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameSystem\GAME\LIGHT">
+      <UniqueIdentifier>{70e332b6-f9d8-4a2e-963c-99c34a8a388d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CONSOLE.cpp">
@@ -116,6 +122,15 @@
     </ClCompile>
     <ClCompile Include="RUNTIME_ERROR.cpp">
       <Filter>소스 파일\GameSystem\ERROR</Filter>
+    </ClCompile>
+    <ClCompile Include="LIGHT.cpp">
+      <Filter>소스 파일\GameSystem\GAME\LIGHT</Filter>
+    </ClCompile>
+    <ClCompile Include="Render.cpp">
+      <Filter>소스 파일\GameSystem\GAMESYSTEM</Filter>
+    </ClCompile>
+    <ClCompile Include="D3DInitialize.cpp">
+      <Filter>소스 파일\GameSystem\GAMESYSTEM</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -161,6 +176,9 @@
     <ClInclude Include="RUNTIME_ERROR.h">
       <Filter>소스 파일\GameSystem\ERROR</Filter>
     </ClInclude>
+    <ClInclude Include="LIGHT.h">
+      <Filter>소스 파일\GameSystem\GAME\LIGHT</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="UpdateLog\v1.x\v1.1.txt">
@@ -190,9 +208,27 @@
     <Text Include="ver.txt">
       <Filter>리소스 파일</Filter>
     </Text>
+    <Text Include="v1.7.txt">
+      <Filter>UpdateLog\v1.x</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\shader.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="shader\shadow.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="shader\HorizonrtalBlur.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="shader\VerticalBlur.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="shader\SoftShadow.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="shader\MainShader.fx">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

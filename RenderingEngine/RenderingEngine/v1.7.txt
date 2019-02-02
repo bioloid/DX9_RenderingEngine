@@ -1,0 +1,12 @@
+Update Log v1.7.0
+
+- shadow
+	- calculate object shadow
+
+- edit some error handling process
+	- model.cpp
+	- gamesystem.cpp
+
+
+shadow Update Log v1.0.0
+- avg fps 114 ~ 115 - > 111 ~ 113

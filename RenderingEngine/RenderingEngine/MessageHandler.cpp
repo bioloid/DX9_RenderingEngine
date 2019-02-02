@@ -96,3 +96,40 @@ LRESULT CALLBACK GAMESYSTEM::MessageHandler
 	#endif // CONDEBUG
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
+
+void GAMESYSTEM::MSGPrint(int x, int y)
+{
+	FontBox.top = x;
+	FontBox.left = y;
+	font->DrawText(NULL, str, -1, &FontBox, DT_NOCLIP, D3DCOLOR_XRGB(0, 0, 0));
+}
+
+void GAMESYSTEM::DrawMSG()
+{
+	avgfps.Count();
+	instfps.Count();
+	ram.Update();
+	cpu.Update();
+	sprintf_s(str, sizeof(str) / sizeof(char), TEXT("RUN time : %.03lf"), time.getTime());
+	MSGPrint(0, 0);
+	sprintf_s(str, sizeof(str) / sizeof(char), TEXT("AVG FPS : %4.03lf"), avgfps.Get());
+	MSGPrint(15, 0);
+	sprintf_s(str, sizeof(str) / sizeof(char), TEXT("INST FPS : %4.03lf"), instfps.Get());
+	MSGPrint(30, 0);
+	sprintf_s(str, sizeof(str) / sizeof(char), TEXT("Total Virtual RAM : %dMB"), ram.GetTotalVirtualMEM() / (1024 * 1024));
+	MSGPrint(45, 0);
+	sprintf_s(str, sizeof(str) / sizeof(char), TEXT("Used Virtual RAM : %dMB"), ram.GetUsedVirtualMEM() / (1024 * 1024));
+	MSGPrint(60, 0);
+	sprintf_s(str, sizeof(str) / sizeof(char), TEXT("Total RAM : %dMB"), ram.GetTotalMEM() / (1024 * 1024));
+	MSGPrint(75, 0);
+	sprintf_s(str, sizeof(str) / sizeof(char), TEXT("Used RAM : %dMB"), ram.GetUsedMEM() / (1024 * 1024));
+	MSGPrint(90, 0);
+	sprintf_s(str, sizeof(str) / sizeof(char), TEXT("Proc RAM : %.03fMB"), (float)ram.GetProcUsedMEM() / (1024 * 1024));
+	MSGPrint(105, 0);
+	sprintf_s(str, sizeof(str) / sizeof(char), TEXT("Proc Virtual RAM : %.03fMB"), (float)ram.GetProcUsedVirtualMEM() / (1024 * 1024));
+	MSGPrint(120, 0);
+	sprintf_s(str, sizeof(str) / sizeof(char), TEXT("Total CPU : %d%%"), cpu.GetCpuUsage());
+	MSGPrint(135, 0);
+	sprintf_s(str, sizeof(str) / sizeof(char), TEXT("Proc CPU : %.1lf%%"), cpu.GetProcessUsage());
+	MSGPrint(150, 0);
+}

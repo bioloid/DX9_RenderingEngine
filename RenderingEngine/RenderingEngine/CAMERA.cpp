@@ -20,8 +20,10 @@ void CAMERA::Initialize()
 	fov = 1.047183f;	// 60 degree in radian
 	angle[0] = 1.5707745f; // 90 degree in radian
 	angle[1] = 0.0f;
-
-	position = { 0.0f, 0.0f, -5.0f };
+	angle[0] = 3.14f* 0.5;
+	angle[1] = 0.0f;
+	position = { 1 , 2 , 2 };
+//	position = { 0.0f, 0.0f, -5.0f };
 	up = { 0.0f, 1.0f, 0.0f };
 
 	CalculateConst();
@@ -63,15 +65,19 @@ void CAMERA::Move(unsigned int _data)
 	else
 		return;
 	D3DXMatrixLookAtLH(&gSystem.viewmatrix, &position, &target, &up);
-	gSystem.shader->SetMatrix("gViewMatrix", &gSystem.viewmatrix);
+	D3DXMATRIXA16 gMatViewProjection;
+	gMatViewProjection = gSystem.viewmatrix * gSystem.projmatrix;
+	gSystem.shader->SetMatrix("gMatViewProjection", &gMatViewProjection);
 }
 void CAMERA::SetPosition()
 {
+	CalculateConst();
 	target = position + lookx * length;
 	D3DXMatrixLookAtLH(&gSystem.viewmatrix, &position, &target, &up);
 	D3DXMatrixPerspectiveFovLH(&gSystem.projmatrix, fov, (float)gSystem.winSize.right / (float)gSystem.winSize.bottom, near_, far_);
-	gSystem.shader->SetMatrix("gViewMatrix", &gSystem.viewmatrix);
-	gSystem.shader->SetMatrix("gProjectionMatrix", &gSystem.projmatrix);
+	D3DXMATRIXA16 gMatViewProjection;
+	gMatViewProjection = gSystem.viewmatrix * gSystem.projmatrix;
+	gSystem.shader->SetMatrix("gMatViewProjection", &gMatViewProjection);
 }
 void CAMERA::rotation(int _moveX, int _moveY)
 {

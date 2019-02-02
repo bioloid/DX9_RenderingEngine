@@ -42,6 +42,7 @@
 #include "RAM.h"
 #include "CAMERA.h"
 #include "MODEL.h"
+#include "LIGHT.h"
 
 //	Other Includes
 //
@@ -66,6 +67,13 @@ private:
 	IDirect3DDevice9*	device = NULL;
 	ID3DXFont*			font = NULL;
 	LPD3DXEFFECT		shader = NULL;
+	LPD3DXEFFECT		shadow = NULL;
+
+	LPDIRECT3DTEXTURE9		gpShadowRenderTarget = NULL;
+	LPDIRECT3DSURFACE9		gpShadowDepthStencil = NULL;
+
+	LPDIRECT3DTEXTURE9		gpRenderTarget = NULL;
+
 
 	D3DXMATRIXA16		viewmatrix;
 	D3DXMATRIXA16		projmatrix;
@@ -102,8 +110,9 @@ private:
 	CPU					cpu;
 	RAM					ram;
 	CAMERA				camera;
-	MODEL				test;
-
+	MODEL				floor, screen;
+	MODEL				box0, box1, box2, box3;
+	LIGHT				testLight;
 	//	Functions
 	//
 public:
@@ -135,10 +144,20 @@ public:
 	friend class CAMERA;
 	friend class MOUSE;
 	friend class RUNTIME_ERROR;
+	friend class LIGHT;
 };
 
 //	Other Variables
 //
 extern GAMESYSTEM gSystem;
 
+
+template<class T> void Release_(T t)
+{
+	if (t != NULL)
+	{
+		t->Release();
+		t = NULL;
+	}
+}
 #endif // !__GAMESYSTEM_H__

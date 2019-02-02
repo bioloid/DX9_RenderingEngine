@@ -1,21 +1,22 @@
-float4x4 gWorldMatrix : World;
-float4x4 gViewMatrix : View;
-float4x4 gProjectionMatrix : Projection;
-float4 gWorldLightPosition;
-float4 gWorldCameraPosition : ViewPosition;
+float4x4 gMatWorld;
+float4x4 gMatViewProjection;
+float4x4 gMatLightViewProjection;
 
-texture DiffuseMap_Tex;
-
-sampler2D DiffuseSampler = sampler_state
+struct LIGHT
 {
-    Texture = (DiffuseMap_Tex);
-    MinFilter = Linear;
-    MagFilter = Linear;
-    MipFilter = Linear;
-    AddressU = Wrap;
-    AddressV = Wrap;
+    float4 position;
+    float4 lookTo;
+    float4 color;
 };
 
+LIGHT light_0;
+float4 gWorldCameraPosition : ViewPosition;
+
+texture DiffuseTexture;
+sampler2D DiffuseSampler = sampler_state { Texture = (DiffuseTexture); };
+
+texture ShadowTexture;
+sampler2D ShadowSampler = sampler_state { Texture = (ShadowTexture); };
 
 struct VS_INPUT_VNT
 {
@@ -27,29 +28,26 @@ struct VS_INPUT_VNT
 struct VS_OUTPUT_VNT
 {
     float4 mPosition : POSITION;
+    float2 mTexCoord : TEXCOORD0;
     float3 mDiffuse : TEXCOORD1;
     float3 mViewDir : TEXCOORD2;
     float3 mReflection : TEXCOORD3;
-    float2 mTexCoord : TEXCOORD0;
+    float4 mClipPosition : TEXCOORD4;
 };
 
 VS_OUTPUT_VNT vs_main_vnt(VS_INPUT_VNT Input)
 {
     VS_OUTPUT_VNT Output;
-
-    Output.mPosition = mul(Input.mPosition, gWorldMatrix);
-    float3 worldNormal = mul(Input.mNormal, (float3x3) gWorldMatrix);
-    worldNormal = normalize(worldNormal); // moved normal vectors
-
-    float3 lightDir = normalize(Output.mPosition.xyz - gWorldLightPosition.xyz); // Light -> mPosition
-    float3 viewDir = normalize(Output.mPosition.xyz - gWorldCameraPosition.xyz);
-    Output.mViewDir = viewDir; //
-
-    Output.mPosition = mul(Output.mPosition, gViewMatrix);
-    Output.mPosition = mul(Output.mPosition, gProjectionMatrix);
-
-
     Output.mTexCoord = Input.mTexCoord;
+
+    Output.mPosition = mul(Input.mPosition, gMatWorld);
+    Output.mClipPosition = mul(Output.mPosition, gMatLightViewProjection);
+    float3 worldNormal = normalize(mul(Input.mNormal, (float3x3) gMatWorld));
+
+    float3 lightDir = normalize(light_0.lookTo - light_0.position);
+    Output.mViewDir = normalize(Output.mPosition.xyz - gWorldCameraPosition.xyz);
+
+    Output.mPosition = mul(Output.mPosition, gMatViewProjection);
     Output.mDiffuse = dot(-lightDir, worldNormal);
     Output.mReflection = reflect(lightDir, worldNormal);
 
@@ -62,108 +60,122 @@ struct PS_INPUT_VNT
     float3 mDiffuse : TEXCOORD1;
     float3 mViewDir : TEXCOORD2;
     float3 mReflection : TEXCOORD3;
+    float4 mClipPosition : TEXCOORD4;
 };
 
 float4 ps_main_vnt(PS_INPUT_VNT Input) : COLOR
 {
+    float2 uv = Input.mClipPosition.xy / Input.mClipPosition.w;
+    uv.y = -uv.y;
+    uv = uv * 0.5f + 0.5f;
+
+    float4 albedo = tex2D(DiffuseSampler, Input.mTexCoord);
+    float3 ambient = float3(0.2f, 0.2f, 0.2f);
+    
     float3 diffuse = saturate(Input.mDiffuse);
     float3 reflection = normalize(Input.mReflection);
-    float3 viewDir = normalize(Input.mViewDir);
+
     float3 specular = 0;
     if (diffuse.x > 0)
     {
-        specular = saturate(dot(reflection, -viewDir));
+        specular = saturate(dot(reflection, -normalize(Input.mViewDir)));
         specular = pow(specular, 20.0f);
     }
-    float3 ambient = float3(0.2f, 0.2f, 0.2f);
-    float4 albedo = tex2D(DiffuseSampler, Input.mTexCoord);
-    float4 factor = float4(ambient + diffuse + specular, 1);
-//    return float4(0.0f, 1.0f, 0.0f, 1.0f);
-    return albedo * factor;
-}
-
-
-
-
-float4 Ambient;
-float4 Diffuse;
-float4 Specular;
-float4 Emissive;
-
-struct VS_INPUT_RGBA
-{
-    float4 mPosition : POSITION;
-    float3 mNormal : NORMAL;
-};
-
-struct VS_OUTPUT_RGBA
-{
-    float4 mPosition : POSITION;
-    float3 mDiffuse : TEXCOORD1;
-    float3 mViewDir : TEXCOORD2;
-    float3 mReflection : TEXCOORD3;
-};
-
-VS_OUTPUT_RGBA vs_main_RGBA(VS_INPUT_RGBA input)
-{
-    VS_OUTPUT_RGBA output;
-    output.mPosition = mul(input.mPosition, gWorldMatrix);
-    float3 worldNormal = mul(input.mNormal, (float3x3) gWorldMatrix);
-    worldNormal = normalize(worldNormal); // moved normal vectors
-
-    float3 lightDir = normalize(output.mPosition.xyz - gWorldLightPosition.xyz); // Light -> mPosition
-    float3 viewDir = normalize(output.mPosition.xyz - gWorldCameraPosition.xyz);
-    output.mViewDir = viewDir; //
-
-    output.mDiffuse = dot(-lightDir, worldNormal);
-    output.mReflection = reflect(lightDir, worldNormal);
-    output.mPosition = mul(output.mPosition, gViewMatrix);
-    output.mPosition = mul(output.mPosition, gProjectionMatrix);
+    specular *= 0.5;
+    if (uv.y < 0 || uv.x < 0 || uv.y > 1 || uv.x > 1)
+    {
+        return float4((ambient + diffuse + specular) * albedo.rgb, albedo.w);
+    }
     
-    return output;
+    
+    float currentDepth = Input.mClipPosition.z / Input.mClipPosition.w;
+    float4 shadowDepth = tex2D(ShadowSampler, uv);
+
+    if (currentDepth > shadowDepth.r + 0.0005f)
+    {
+        return float4((ambient + diffuse + specular) * albedo.rgb * 0.5, albedo.w);
+    }
+
+    return float4((ambient + diffuse + specular) * albedo.rgb, albedo.w);
+
 }
 
-struct PS_INPUT_RGBA
+
+struct INPUT_V
 {
-    float3 mDiffuse : TEXCOORD0;
-    float3 mViewDir : TEXCOORD1;
-    float3 mReflection : TEXCOORD2;
+    float4 mPosition : POSITION;
+    float2 mTexCoord : TEXCOORD0;
 };
 
-float4 ps_main_RGBA(PS_INPUT_RGBA input) : COLOR
+struct OUTPUT_V
 {
-    float3 diffuse = saturate(input.mDiffuse);
-    float3 reflection = normalize(input.mReflection);
-    float3 viewDir = normalize(input.mViewDir);
-    float3 specular = 0;
-    if (diffuse.x > 0)
-    {
-        specular = saturate(dot(reflection, -viewDir));
-        specular = pow(specular, 20.0f);
-    }
-    float3 ambient = float3(0.2f, 0.2f, 0.2f);
+    float4 mPosition : POSITION;
+    float2 mTexCoord0 : TEXCOORD0;
+    float2 mTexCoord1 : TEXCOORD1;
+    float2 mTexCoord2 : TEXCOORD2;
+    float2 mTexCoord3 : TEXCOORD3;
+    float2 mTexCoord4 : TEXCOORD4;
+    float2 mTexCoord5 : TEXCOORD5;
+    float2 mTexCoord6 : TEXCOORD6;
+    float2 mTexCoord7 : TEXCOORD7;
+};
 
-    float4 factor = float4(ambient + diffuse + specular, 1);
-//    return float4(1.0f, 0.0f, 0.0f, 1.0f);
-    return Diffuse * factor;
+struct INPUT_P
+{
+    float2 mTexCoord0 : TEXCOORD0;
+    float2 mTexCoord1 : TEXCOORD1;
+    float2 mTexCoord2 : TEXCOORD2;
+    float2 mTexCoord3 : TEXCOORD3;
+    float2 mTexCoord4 : TEXCOORD4;
+    float2 mTexCoord5 : TEXCOORD5;
+    float2 mTexCoord6 : TEXCOORD6;
+    float2 mTexCoord7 : TEXCOORD7;
+};
 
-    /*
- //   return Diffuse;
-    float4 diffuse = float4(saturate(input.mDiffuse), 1);
-    float3 reflection = normalize(input.mReflection);
-    float3 viewDir = normalize(input.mViewDir);
-    float specular = 0;
-    if (diffuse.x > 0)
-    {
-        specular = saturate(dot(reflection, -viewDir));
-        specular = pow(specular, 20.0f);
-    }
-    float4 ambient_factor = float4(0.9f, 0.9f, 0.9f, 0.9f);
-//    return float4(1.0f, 0.0f, 0.0f, 1.0f);
-//    return Diffuse;
-    return Ambient * ambient_factor + Diffuse * diffuse + Specular * specular;
-*/
+
+texture gBlurTexture;
+sampler2D BlurSampler = sampler_state
+{
+    Texture = (gBlurTexture);
+};
+OUTPUT_V vs_main(INPUT_V Input)
+{
+    float2 step = { 1.0f / 1280.0f, 1.0f / 720.0f };
+    OUTPUT_V Output;
+    Output.mTexCoord0 = Input.mTexCoord;
+    Output.mTexCoord1 = Input.mTexCoord - float2(step.x, 0);
+    Output.mTexCoord2 = Input.mTexCoord + float2(step.x, 0);
+    Output.mTexCoord3 = Input.mTexCoord - float2(0, step.y);
+    Output.mTexCoord4 = Input.mTexCoord + float2(0, step.y);
+    Output.mTexCoord5 = Input.mTexCoord - float2(step.x, step.y);
+    Output.mTexCoord6 = Input.mTexCoord + float2(step.x, step.y);
+    Output.mTexCoord7 = Input.mTexCoord - float2(step.x, -step.y);
+
+    Output.mPosition = mul(Input.mPosition, gMatWorld);
+    Output.mPosition = mul(Output.mPosition, gMatViewProjection);
+
+    return Output;
 }
+float4 ps_main(INPUT_P Input) : COLOR
+{
+    float4 tmp[8];
+    tmp[0] = tex2D(BlurSampler, Input.mTexCoord0);
+//    return tmp[0];
+    tmp[1] = tex2D(BlurSampler, Input.mTexCoord1);
+    tmp[2] = tex2D(BlurSampler, Input.mTexCoord2);
+    tmp[3] = tex2D(BlurSampler, Input.mTexCoord3);
+    tmp[4] = tex2D(BlurSampler, Input.mTexCoord4);
+    tmp[5] = tex2D(BlurSampler, Input.mTexCoord5);
+    tmp[6] = tex2D(BlurSampler, Input.mTexCoord6);
+    tmp[7] = tex2D(BlurSampler, Input.mTexCoord7);
+    float4 color;
+    color = (tmp[0] + tmp[1] + tmp[2] + tmp[3] + tmp[4] + tmp[5] + tmp[6] + tmp[7]) / 8;
+    return color;
+}
+
+
+
+
 
 
 //--------------------------------------------------------------//
@@ -177,12 +189,11 @@ technique VTN
         PixelShader = compile ps_2_0 ps_main_vnt();
     }
 }
-
-technique RGBA
+technique Blur
 {
     pass Pass_0
     {
-        VertexShader = compile vs_2_0 vs_main_RGBA();
-        PixelShader = compile ps_2_0 ps_main_RGBA();
+        VertexShader = compile vs_2_0 vs_main();
+        PixelShader = compile ps_2_0 ps_main();
     }
 }

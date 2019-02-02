@@ -48,8 +48,9 @@ public:
 	void ReadF(char*, DWORD, int*);
 	void ReadFace(char*);
 	void Move(D3DXMATRIXA16);
+	void Test();
 	void Render();
-
+	void ShadowRender();
 	void Release();
 	int  cStrFind(char*, const char*);
 	bool bEnable = true;

@@ -37,11 +37,11 @@ struct PS_INPUT
 float4 shadow_ps_main(PS_INPUT Input) :COLOR
 {
     float depth = Input.mZCoord.z / Input.mZCoord.w;
-    return float4(depth, 0.0f, 0.0f, tex2D(DiffuseSampler, Input.mTexCoord).w);
+    return float4(depth.xxx, tex2D(DiffuseSampler, Input.mTexCoord).w);
 }
 technique CreateShadowShader
 {
-    pass CreateShadow
+    pass Pass_0
     {
         VertexShader = compile vs_2_0 shadow_vs_main();
         PixelShader = compile ps_2_0 shadow_ps_main();

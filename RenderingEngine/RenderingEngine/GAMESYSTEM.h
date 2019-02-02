@@ -69,10 +69,17 @@ private:
 	LPD3DXEFFECT		shader = NULL;
 	LPD3DXEFFECT		shadow = NULL;
 
+	LPD3DXEFFECT		HorizontalShader = NULL;
+	LPD3DXEFFECT		VerticalShader = NULL;
+	LPD3DXEFFECT		SoftShadow = NULL;
+	LPD3DXEFFECT		MainShader = NULL;
+
 	LPDIRECT3DTEXTURE9		gpShadowRenderTarget = NULL;
 	LPDIRECT3DSURFACE9		gpShadowDepthStencil = NULL;
 
 	LPDIRECT3DTEXTURE9		gpRenderTarget = NULL;
+	LPDIRECT3DTEXTURE9		VerticalBlurTexture = NULL;
+	LPDIRECT3DTEXTURE9		HorizontalBlurTexture = NULL;
 
 
 	D3DXMATRIXA16		viewmatrix;
@@ -113,6 +120,10 @@ private:
 	MODEL				floor, screen;
 	MODEL				box0, box1, box2, box3;
 	LIGHT				testLight;
+
+
+
+
 	//	Functions
 	//
 public:

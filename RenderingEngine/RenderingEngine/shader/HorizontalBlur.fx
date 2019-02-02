@@ -73,6 +73,6 @@ technique Horizontal
     pass PASS0
     {
         VertexShader = compile vs_2_0 mainVertex();
-        PixelShader = compile vs_2_0 mainPixel();
+        PixelShader = compile ps_2_0 mainPixel();
     }
 }

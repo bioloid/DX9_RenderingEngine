@@ -24,10 +24,12 @@ class CAMERA
 public:
 	void Initialize();
 	void Move(unsigned int);
-
+	void Set();
 	void rotation(int, int);
 	void SetPosition();
-
+	void RenderSoftShadow();
+	void Backup();
+	void Restore();
 	struct Speed speed;
 	float angle[2]; // in Radian
 	float constant[2][2];
@@ -39,12 +41,16 @@ public:
 	D3DXMATRIX V;
 	D3DXMATRIX proj;
 
+	D3DXVECTOR3 bPosition;
+	D3DXVECTOR2 bAngle;
+
 	D3DXVECTOR3 position;
 	D3DXVECTOR3 target;
 	D3DXVECTOR3 up;
 	D3DXVECTOR3 lookx;
 	D3DXVECTOR3 looky;
 	D3DXVECTOR3 lookz;
+	D3DXMATRIXA16 gMatViewProjection;
 
 	CAMERA();
 	~CAMERA();

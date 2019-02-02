@@ -1,18 +1,9 @@
-float4x4 WorldMatrix;
-float4x4 ViewProjectionMatrix;
-texture BlurTexture;
-float2 Screen;
-sampler2D BlurSampler = sampler_state
-{
-    texture = BlurTexture;
-};
-
 struct VInput
 {
     float4 Position : POSITION;
     float2 UV : TEXCOORD0;
 };
-
+ 
 struct VOutput
 {
     float4 Position : POSITION;
@@ -35,6 +26,16 @@ struct PInput
     float2 UV5 : TEXCOORD5;
     float2 UV6 : TEXCOORD6;
 };
+float4x4 WorldMatrix;
+float4x4 ViewProjectionMatrix;
+texture BlurTexture;
+float2 Screen;
+
+sampler2D BlurSampler = sampler_state
+{
+    texture = BlurTexture;
+};
+
 
 VOutput mainVertex(VInput Input)
 {
@@ -53,7 +54,7 @@ VOutput mainVertex(VInput Input)
 
 float4 mainPixel(PInput Input) : COLOR
 {
-    float4 Output = float4(0, 0, 0, 0);
+    float4 Output = float4(0, 1, 0, 1);
     Output += tex2D(BlurSampler, Input.UV0) * 0.2f;
     Output += tex2D(BlurSampler, Input.UV1) * 0.171428f;
     Output += tex2D(BlurSampler, Input.UV2) * 0.142857f;
@@ -61,6 +62,7 @@ float4 mainPixel(PInput Input) : COLOR
     Output += tex2D(BlurSampler, Input.UV4) * 0.171428f;
     Output += tex2D(BlurSampler, Input.UV5) * 0.142857f;
     Output += tex2D(BlurSampler, Input.UV6) * 0.085714f;
+    return tex2D(BlurSampler, Input.UV0);
     return Output;
 }
 // 3 5 6 7 6 5 3 = 35
@@ -70,9 +72,9 @@ float4 mainPixel(PInput Input) : COLOR
 // 0.2f
 technique Vertical
 {
-    pass PASS0
+    pass Pass_0
     {
         VertexShader = compile vs_2_0 mainVertex();
-        PixelShader = compile vs_2_0 mainPixel();
+        PixelShader = compile ps_2_0 mainPixel();
     }
 }

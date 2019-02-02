@@ -211,15 +211,15 @@
     <Text Include="v1.7.txt">
       <Filter>UpdateLog\v1.x</Filter>
     </Text>
+    <Text Include="shader\v1.8.txt">
+      <Filter>UpdateLog\v1.x</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\shader.fx">
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="shader\shadow.fx">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="shader\HorizonrtalBlur.fx">
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="shader\VerticalBlur.fx">
@@ -229,6 +229,9 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="shader\MainShader.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="shader\HorizontalBlur.fx">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

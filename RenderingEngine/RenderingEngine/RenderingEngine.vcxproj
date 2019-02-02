@@ -55,6 +55,7 @@
     <ClInclude Include="TIME.h" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="shader\v1.8.txt" />
     <Text Include="v1.7.txt" />
     <Text Include="data\console\CONSOLE_CHECK_DATA.txt" />
     <Text Include="data\console\CONSOLE_TAB_DATA.txt" />
@@ -67,7 +68,7 @@
     <Text Include="ver.txt" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="shader\HorizonrtalBlur.fx">
+    <FxCompile Include="shader\HorizontalBlur.fx">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">2.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
@@ -91,7 +92,7 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="shader\shadow.fx">
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">2.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="shader\SoftShadow.fx">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>

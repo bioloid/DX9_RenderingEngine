@@ -18,6 +18,7 @@ struct VOutput
     float3 Diffuse : TEXCOORD1;
     float3 ViewDir : TEXCOORD2;
     float3 Reflection : TEXCOORD3;
+    float4 ShadowUV : TEXCOORD4;
 };
 
 struct PInput
@@ -26,6 +27,7 @@ struct PInput
     float3 Diffuse : TEXCOORD1;
     float3 ViewDir : TEXCOORD2;
     float3 Reflection : TEXCOORD3;
+    float4 ShadowUV : TEXCOORD4;
 };
 
 
@@ -62,7 +64,7 @@ VOutput mainVertex(VInput Input)
     Output.Position = mul(Output.Position, ViewProjectionMatrix);
     Output.Diffuse = dot(-lightDir, worldNormal);
     Output.Reflection = reflect(lightDir, worldNormal);
-
+    Output.ShadowUV = Output.Position;
     return Output;
 }
 
@@ -79,9 +81,14 @@ float4 mainPixel(PInput Input) : COLOR
         specular = pow(specular, 20.0f);
     }
     specular *= 0.5;
-    float4 shadowDepth = tex2D(BlurSampler, Input.UV);
+    float2 UV = Input.ShadowUV.xy / Input.ShadowUV.w;
+    UV.y = -UV.y;
+    UV = UV * 0.5f + 0.5f;
+
+    float4 shadowDepth = tex2D(BlurSampler, UV);
+//    return shadowDepth;
     return float4((ambient + diffuse + specular)
-    * mainTextureColor.rgb * shadowDepth.rgb, mainTextureColor.w);
+    * mainTextureColor.rgb * shadowDepth.r, mainTextureColor.w);
 }
 
 

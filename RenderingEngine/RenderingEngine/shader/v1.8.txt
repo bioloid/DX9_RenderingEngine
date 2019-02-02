@@ -1,0 +1,8 @@
+Update Log v1.8.0
+
+- shadow
+	- shadow with blur effect
+	- divide shader files
+
+- TODO
+	- CAMERA, MODEL, LIGHT class

@@ -78,14 +78,14 @@ void GAMESYSTEM::D3DInitialize(bool _windowed, D3DDEVTYPE _deviceType)
 		}
 	}
 
+
 	LPDIRECT3DSURFACE9 originalTarget; // 백 버퍼
-	LPDIRECT3DSURFACE9 capturingTarget; // 캡쳐된 내용이 들어갈 서피스
 	device->GetRenderTarget(0, &originalTarget); // 가져온다..(백업?)
 	D3DSURFACE_DESC desc;
 	originalTarget->GetDesc(&desc);
 
+
 	// 렌더타깃을 만든다.
-	const int shadowMapSize = 2048;
 	if (FAILED(device->CreateTexture(desc.Width, desc.Height,
 		1, D3DUSAGE_RENDERTARGET, D3DFMT_R32F,
 		D3DPOOL_DEFAULT, &gpShadowRenderTarget, NULL)))
@@ -109,7 +109,6 @@ void GAMESYSTEM::D3DInitialize(bool _windowed, D3DDEVTYPE _deviceType)
 
 
 
-
 	if (FAILED(device->CreateTexture(desc.Width, desc.Height,
 		1, D3DUSAGE_RENDERTARGET, desc.Format,
 		D3DPOOL_DEFAULT, &gpRenderTarget, NULL)))
@@ -120,6 +119,25 @@ void GAMESYSTEM::D3DInitialize(bool _windowed, D3DDEVTYPE _deviceType)
 		throw RUNTIME_ERROR(CRITICAL_DIRECTX_ERROR);
 	}
 
+	if (FAILED(device->CreateTexture(desc.Width, desc.Height,
+		1, D3DUSAGE_RENDERTARGET, desc.Format,
+		D3DPOOL_DEFAULT, &VerticalBlurTexture, NULL)))
+	{
+		console << con::error << con::func << "CreateTexture - gpRenderTarget failed" << con::endl;
+		console << con::error << con::func << "critical error is detected" << con::endl;
+		D3DRelease();
+		throw RUNTIME_ERROR(CRITICAL_DIRECTX_ERROR);
+	}
+
+	if (FAILED(device->CreateTexture(desc.Width, desc.Height,
+		1, D3DUSAGE_RENDERTARGET, desc.Format,
+		D3DPOOL_DEFAULT, &HorizontalBlurTexture, NULL)))
+	{
+		console << con::error << con::func << "CreateTexture - gpRenderTarget failed" << con::endl;
+		console << con::error << con::func << "critical error is detected" << con::endl;
+		D3DRelease();
+		throw RUNTIME_ERROR(CRITICAL_DIRECTX_ERROR);
+	}
 
 	camera.Initialize();
 
@@ -143,18 +161,13 @@ void GAMESYSTEM::D3DInitialize(bool _windowed, D3DDEVTYPE _deviceType)
 		D3DXVECTOR4(0.0f, 0.0f, 0.0f, 0.0f),
 		D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f), "light_0");
 
-
-
 	try
 	{
 		D3DXMATRIXA16 test_;
 		D3DXMatrixIdentity(&test_);
-		test_._43 = 10;
-
+		test_._43 = 12.485;
 		screen.Initialize("Screen.obj", test_);
-		//	test.Initialize("lowpolytree.obj", test_);
-		//	test.Initialize("test.obj", test_);
-		//	test.Initialize("wooden watch tower2.obj", test_);
+		test_._43 = 0;
 		floor.Initialize("Floor.obj", test_);
 		test_._41 = 1; test_._43 = 1;
 		box0.Initialize("Tree.obj", test_);
@@ -165,6 +178,9 @@ void GAMESYSTEM::D3DInitialize(bool _windowed, D3DDEVTYPE _deviceType)
 		test_._41 = -1; test_._43 = -1;
 		box3.Initialize("box2.obj", test_);
 
+		//	test.Initialize("lowpolytree.obj", test_);
+		//	test.Initialize("test.obj", test_);
+		//	test.Initialize("wooden watch tower2.obj", test_);
 		//	test.Initialize("MaleLow.obj", test_);
 		//	test.Initialize("low-poly-mill.obj", test_);
 		//	test.Initialize("IronMan.obj", test_);
@@ -188,6 +204,7 @@ void GAMESYSTEM::D3DInitialize(bool _windowed, D3DDEVTYPE _deviceType)
 		device->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 		device->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	}
+
 
 	avgfps.Initialize(AVG);
 	instfps.Initialize(INST);

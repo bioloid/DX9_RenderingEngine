@@ -29,13 +29,14 @@ private:
 	string path;
 
 	int fileType = -1;
-	D3DXMATRIXA16 position;
 	int v, vn, vt;
 
 	vector<MESH> mesh;
 	vector<MTL> mtl;
 
 public:
+	D3DXMATRIXA16 position;
+
 	static string defaltPath;
 
 	MODEL() {}
@@ -52,6 +53,12 @@ public:
 	void Render();
 	void ShadowRender();
 	void Release();
+
+
+	void RenderVertical();
+	void SoftShadow();
+	void test3();
+
 	int  cStrFind(char*, const char*);
 	bool bEnable = true;
 };
@@ -155,4 +162,5 @@ struct MODEL::VertexXYZTEXNOR
 
 	static const DWORD FVF = D3DFVF_XYZ | D3DFVF_TEX1 | D3DFVF_NORMAL;
 };
+
 #endif

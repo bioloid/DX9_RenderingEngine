@@ -185,8 +185,8 @@ technique VTN
 {
     pass Pass_0
     {
-        VertexShader = compile vs_2_0 vs_main_vnt();
-        PixelShader = compile ps_2_0 ps_main_vnt();
+        VertexShader = compile vs_3_0 vs_main_vnt();
+        PixelShader = compile ps_3_0 ps_main_vnt();
     }
 }
 technique Blur

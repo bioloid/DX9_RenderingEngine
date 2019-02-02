@@ -25,11 +25,15 @@ float4x4 ViewProjectionMatrix;
 float4x4 LightViewProjectionMatrix;
 
 texture ShadowTexture;
+texture MainTexture;
 sampler2D ShadowSampler = sampler_state
 {
     texture = ShadowTexture;
 };
-
+sampler2D MainSampler = sampler_state
+{
+    texture = MainTexture;
+};
 
 
 VOutput mainVertex(VInput Input)
@@ -47,6 +51,7 @@ float4 mainPixel(PInput Input) : COLOR
 {
     float2 UV = Input.Depth.xy / Input.Depth.w;
     float currentDepth = Input.Depth.z / Input.Depth.w;
+    float alpha = tex2D(MainSampler, Input.UV).w;
     UV.y = -UV.y;
     UV = UV * 0.5f + 0.5f;
     float4 shadowDepth = tex2D(ShadowSampler, UV);
@@ -54,9 +59,10 @@ float4 mainPixel(PInput Input) : COLOR
     {
         return float4(1, 1, 1, 1);
     }
+
     if (currentDepth > shadowDepth.r + 0.0005f)
-        return float4(0.5, 0.5, 0.5, 1);
-    return float4(1, 1, 1, 1);
+        return float4(0.5, 0.5, 0.5, alpha);
+    return float4(1, 1, 1, alpha);
 }
 // 3 5 6 7 6 5 3 = 35
 // 0.085714f
@@ -65,9 +71,9 @@ float4 mainPixel(PInput Input) : COLOR
 // 0.2f
 technique SoftShadow
 {
-    pass PASS0
+    pass Pass_0
     {
         VertexShader = compile vs_2_0 mainVertex();
-        PixelShader = compile vs_2_0 mainPixel();
+        PixelShader = compile ps_2_0 mainPixel();
     }
 }

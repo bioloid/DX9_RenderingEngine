@@ -8,6 +8,17 @@ CAMERA::CAMERA()
 CAMERA::~CAMERA()
 {
 }
+void CAMERA::Backup()
+{
+	bPosition = position;
+	bAngle = angle;
+}
+void CAMERA::Restore()
+{
+	position = bPosition;
+	angle[0] = bAngle.x;
+	angle[1] = bAngle.y;
+}
 void CAMERA::Initialize()
 {
 	length = 1.0f; // distance between camera position and target
@@ -21,8 +32,8 @@ void CAMERA::Initialize()
 	angle[0] = 1.5707745f; // 90 degree in radian
 	angle[1] = 0.0f;
 	angle[0] = 3.14f* 0.5;
-	angle[1] = 0.0f;
-	position = { 1 , 2 , 2 };
+	angle[1] = 0;
+	position = { 0 , 5 , -10 };
 //	position = { 0.0f, 0.0f, -5.0f };
 	up = { 0.0f, 1.0f, 0.0f };
 
@@ -69,15 +80,25 @@ void CAMERA::Move(unsigned int _data)
 	gMatViewProjection = gSystem.viewmatrix * gSystem.projmatrix;
 	gSystem.shader->SetMatrix("gMatViewProjection", &gMatViewProjection);
 }
-void CAMERA::SetPosition()
+void CAMERA::Set()
 {
-	CalculateConst();
 	target = position + lookx * length;
 	D3DXMatrixLookAtLH(&gSystem.viewmatrix, &position, &target, &up);
 	D3DXMatrixPerspectiveFovLH(&gSystem.projmatrix, fov, (float)gSystem.winSize.right / (float)gSystem.winSize.bottom, near_, far_);
-	D3DXMATRIXA16 gMatViewProjection;
 	gMatViewProjection = gSystem.viewmatrix * gSystem.projmatrix;
+}
+
+void CAMERA::SetPosition()
+{
+	CalculateConst();
+	Set();
 	gSystem.shader->SetMatrix("gMatViewProjection", &gMatViewProjection);
+}
+void CAMERA::RenderSoftShadow()
+{
+	CalculateConst();
+	Set();
+	gSystem.SoftShadow->SetMatrix("ViewProjectionMatrix", &gMatViewProjection);
 }
 void CAMERA::rotation(int _moveX, int _moveY)
 {

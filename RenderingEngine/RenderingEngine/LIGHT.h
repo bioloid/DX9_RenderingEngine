@@ -28,7 +28,7 @@ public:
 	void RenderShader();
 	void RenderShadow();
 	void Release();
-
+	void RenderSoftShadow();
 	LIGHT();
 	~LIGHT();
 

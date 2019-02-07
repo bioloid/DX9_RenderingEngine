@@ -54,6 +54,7 @@ VOutput mainVertex(VInput Input)
 float4 mainPixel(PInput Input) : COLOR
 {
     float4 Output = float4(0, 0, 0, 0);
+//    return tex2D(BlurSampler, Input.UV0);
     Output += tex2D(BlurSampler, Input.UV0) * 0.2f;
     Output += tex2D(BlurSampler, Input.UV1) * 0.171428f;
     Output += tex2D(BlurSampler, Input.UV2) * 0.142857f;

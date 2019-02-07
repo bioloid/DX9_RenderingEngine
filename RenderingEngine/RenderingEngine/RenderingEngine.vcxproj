@@ -35,6 +35,8 @@
     <ClCompile Include="MODEL.cpp" />
     <ClCompile Include="MOUSE.cpp" />
     <ClCompile Include="RAM.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="TEXTURERENDER.cpp" />
     <ClCompile Include="TIME.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -52,6 +54,7 @@
     <ClInclude Include="MODEL.h" />
     <ClInclude Include="MOUSE.h" />
     <ClInclude Include="RAM.h" />
+    <ClInclude Include="TEXTURERENDER.h" />
     <ClInclude Include="TIME.h" />
   </ItemGroup>
   <ItemGroup>
@@ -79,6 +82,16 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="shader\MainShader.fx">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">2.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="shader\SamplingShader.fx">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">2.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>

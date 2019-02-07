@@ -2,7 +2,6 @@ struct LIGHT
 {
     float4 position;
     float4 lookTo;
-    float4 color;
 };
 struct VInput
 {

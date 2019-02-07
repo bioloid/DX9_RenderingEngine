@@ -20,16 +20,17 @@ class CAMERA
 		float th, pi;
 	};
 	void CalculateConst();
-
+	void CalculateMatrix();
 public:
 	void Initialize();
 	void Move(unsigned int);
-	void Set();
-	void rotation(int, int);
-	void SetPosition();
-	void RenderSoftShadow();
+	void MouseMove(int, int);
+	void SetViewProjectionMatrix(const LPD3DXEFFECT& shader);
+	void SetPositionVector(const LPD3DXEFFECT& shader);
+	void Update();
 	void Backup();
 	void Restore();
+
 	struct Speed speed;
 	float angle[2]; // in Radian
 	float constant[2][2];
@@ -47,10 +48,14 @@ public:
 	D3DXVECTOR3 position;
 	D3DXVECTOR3 target;
 	D3DXVECTOR3 up;
+
 	D3DXVECTOR3 lookx;
 	D3DXVECTOR3 looky;
 	D3DXVECTOR3 lookz;
-	D3DXMATRIXA16 gMatViewProjection;
+
+	D3DXMATRIXA16 viewMatrix;
+	D3DXMATRIXA16 projectionMatrix;
+	D3DXMATRIXA16 viewProjectionMatrix;
 
 	CAMERA();
 	~CAMERA();

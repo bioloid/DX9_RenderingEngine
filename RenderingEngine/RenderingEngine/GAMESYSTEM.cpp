@@ -30,20 +30,24 @@ void GAMESYSTEM::D3DRelease()
 	console << con::info << con::func << "IDirect3DDevice9* Released" << con::endl;
 	Release_<ID3DXFont*>(font);
 	console << con::info << con::func << "ID3DXFont* Released" << con::endl;
-	Release_<LPD3DXEFFECT>(shader);
-	console << con::info << con::func << "LPD3DXEFFECT shader Released" << con::endl;
-	Release_<LPD3DXEFFECT>(shadow);
-	console << con::info << con::func << "LPD3DXEFFECT shadow Released" << con::endl;
-	Release_<LPD3DXEFFECT>(HorizontalShader);
-	Release_<LPD3DXEFFECT>(VerticalShader);
-	Release_<LPD3DXEFFECT>(SoftShadow);
-	Release_<LPD3DXEFFECT>(MainShader);
+	Release_<LPD3DXEFFECT>(shadowZBuildShader);
+	Release_<LPD3DXEFFECT>(shadowHorizontalBlurShader);
+	Release_<LPD3DXEFFECT>(shadowVerticalBlurShader);
+	Release_<LPD3DXEFFECT>(shadowBlackWhiteBuildShader);
+	Release_<LPD3DXEFFECT>(lastSceneShader);
+	Release_<LPD3DXEFFECT>(SamplingShader);
 
-	Release_<LPDIRECT3DTEXTURE9>(gpShadowRenderTarget);
-	Release_<LPDIRECT3DSURFACE9>(gpShadowDepthStencil);
-	Release_<LPDIRECT3DTEXTURE9>(gpRenderTarget);
-	Release_<LPDIRECT3DTEXTURE9>(VerticalBlurTexture);
-	Release_<LPDIRECT3DTEXTURE9>(HorizontalBlurTexture);
+	console << con::info << con::func << "LPD3DXEFFECT Released" << con::endl;
+
+	Release_<LPDIRECT3DTEXTURE9>(shadowZBuildRT);
+	Release_<LPDIRECT3DSURFACE9>(shadowZBuildStencil);
+	Release_<LPDIRECT3DTEXTURE9>(shadowBlackWhiteBuildRT);
+	Release_<LPDIRECT3DTEXTURE9>(shadowVerticalBlurRT);
+	Release_<LPDIRECT3DTEXTURE9>(shadowHorizontalBlurRT);
+	upSampler.Release();
+	downSampler.Release();
+
+
 
 	console.RestoreFunction();
 }
@@ -201,6 +205,19 @@ void GAMESYSTEM::D3DEffectInitialize()
 {
 	console.SetFunction("D3DEffectInitialize");
 
+	ShaderLoad("shader\\shadow.fx", shadowZBuildShader);
+	ShaderLoad("shader\\HorizontalBlur.fx", shadowHorizontalBlurShader);
+	ShaderLoad("shader\\VerticalBlur.fx", shadowVerticalBlurShader);
+	ShaderLoad("shader\\SoftShadow.fx", shadowBlackWhiteBuildShader);
+	ShaderLoad("shader\\MainShader.fx", lastSceneShader);
+	ShaderLoad("shader\\SamplingShader.fx", SamplingShader);
+
+
+	console << con::info << con::func << "shader Create succeed" << con::endl;
+	console.RestoreFunction();
+}
+void GAMESYSTEM::ShaderLoad(string _name, LPD3DXEFFECT& shader)
+{
 	LPD3DXBUFFER error = NULL;
 	DWORD shaderflags = 0;
 
@@ -208,71 +225,16 @@ void GAMESYSTEM::D3DEffectInitialize()
 	shaderflags |= D3DXSHADER_DEBUG;
 #endif
 
-	D3DXCreateEffectFromFile(device, "shader\\shader.fx", NULL, NULL, shaderflags, NULL, &shader, &error);
+	D3DXCreateEffectFromFile(device, _name.c_str(), NULL, NULL, shaderflags, NULL, &shader, &error);
 	if (!shader && error)
 	{
 		char *ack = (char*)error->GetBufferPointer();
 		cout << ack << endl;
 		getchar();
-		console << con::error << con::func << "D3DXCreateEffectFromFile() error" << con::endl;
+		console << con::error << con::func << "D3DXCreateEffectFromFile() error - " << _name << con::endl;
 		throw RUNTIME_ERROR(CRITICAL_DIRECTX_ERROR);
 	}
-
-	D3DXCreateEffectFromFile(device, "shader\\shadow.fx", NULL, NULL, shaderflags, NULL, &shadow, &error);
-	if (!shadow && error)
-	{
-		char *ack = (char*)error->GetBufferPointer();
-		cout << ack << endl;
-		getchar();
-		console << con::error << con::func << "D3DXCreateEffectFromFile() error" << con::endl;
-		throw RUNTIME_ERROR(CRITICAL_DIRECTX_ERROR);
-	}
-
-	D3DXCreateEffectFromFile(device, "shader\\HorizontalBlur.fx", NULL, NULL, shaderflags, NULL, &HorizontalShader, &error);
-	if (!HorizontalShader && error)
-	{
-		char *ack = (char*)error->GetBufferPointer();
-		cout << ack << endl;
-		getchar();
-		console << con::error << con::func << "D3DXCreateEffectFromFile() error" << con::endl;
-		throw RUNTIME_ERROR(CRITICAL_DIRECTX_ERROR);
-	}	
-
-	D3DXCreateEffectFromFile(device, "shader\\VerticalBlur.fx", NULL, NULL, shaderflags, NULL, &VerticalShader, &error);
-	if (!VerticalShader && error)
-	{
-		char *ack = (char*)error->GetBufferPointer();
-		cout << ack << endl;
-		getchar();
-		console << con::error << con::func << "D3DXCreateEffectFromFile() error" << con::endl;
-		throw RUNTIME_ERROR(CRITICAL_DIRECTX_ERROR);
-	}	
-
-	D3DXCreateEffectFromFile(device, "shader\\SoftShadow.fx", NULL, NULL, shaderflags, NULL, &SoftShadow, &error);
-	if (!SoftShadow && error)
-	{
-		char *ack = (char*)error->GetBufferPointer();
-		cout << ack << endl;
-		getchar();
-		console << con::error << con::func << "D3DXCreateEffectFromFile() error" << con::endl;
-		throw RUNTIME_ERROR(CRITICAL_DIRECTX_ERROR);
-	}
-
-	D3DXCreateEffectFromFile(device, "shader\\MainShader.fx", NULL, NULL, shaderflags, NULL, &MainShader, &error);
-	if (!MainShader && error)
-	{
-		char *ack = (char*)error->GetBufferPointer();
-		cout << ack << endl;
-		getchar();
-		console << con::error << con::func << "D3DXCreateEffectFromFile() error" << con::endl;
-		throw RUNTIME_ERROR(CRITICAL_DIRECTX_ERROR);
-	}
-
-
-	console << con::info << con::func << "shader Create succeed" << con::endl;
-	console.RestoreFunction();
 }
-
 
 
 void GAMESYSTEM::Test()

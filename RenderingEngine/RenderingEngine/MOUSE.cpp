@@ -17,7 +17,7 @@ void MOUSE::Initialize()
 
 void MOUSE::MouseMove(LPARAM lParam)
 {
-	gSystem.camera.rotation(LOWORD(lParam) - coor.x, HIWORD(lParam) - coor.y);
+	gSystem.camera.MouseMove(LOWORD(lParam) - coor.x, HIWORD(lParam) - coor.y);
 	coor.x = LOWORD(lParam);
 	coor.y = HIWORD(lParam);
 }

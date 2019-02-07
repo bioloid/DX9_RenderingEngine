@@ -526,7 +526,6 @@ void CONSOLE::Check()
 			}
 		}
 	}
-	gSystem.camera.SetPosition();
 	cout << endl;
 }
 

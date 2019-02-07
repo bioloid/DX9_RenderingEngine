@@ -68,6 +68,8 @@ void GAMESYSTEM::D3DInitialize(bool _windowed, D3DDEVTYPE _deviceType)
 	try
 	{
 		D3DEffectInitialize();
+		downSampler.Initialize(true, winSize.right / 2, winSize.bottom / 2, 0.0f, 1.0f);
+		upSampler.Initialize(false, winSize.right, winSize.bottom, 0.0f, 1.0f);
 	}
 	catch (RUNTIME_ERROR &e)
 	{
@@ -76,19 +78,20 @@ void GAMESYSTEM::D3DInitialize(bool _windowed, D3DDEVTYPE _deviceType)
 			D3DRelease();
 			throw e;
 		}
+		if (e.error == CRITICAL_DIRECTX_TEXTURERENDER_CREATETEXTURE_ERROR)
+		{
+			getchar();
+			D3DRelease();
+			throw e;
+		}
 	}
 
 
-	LPDIRECT3DSURFACE9 originalTarget; // 백 버퍼
-	device->GetRenderTarget(0, &originalTarget); // 가져온다..(백업?)
-	D3DSURFACE_DESC desc;
-	originalTarget->GetDesc(&desc);
 
 
 	// 렌더타깃을 만든다.
-	if (FAILED(device->CreateTexture(desc.Width, desc.Height,
-		1, D3DUSAGE_RENDERTARGET, D3DFMT_R32F,
-		D3DPOOL_DEFAULT, &gpShadowRenderTarget, NULL)))
+	if (FAILED(device->CreateTexture(winSize.right, winSize.bottom,
+		1, D3DUSAGE_RENDERTARGET, D3DFMT_R32F, D3DPOOL_DEFAULT, &shadowZBuildRT, NULL)))
 	{
 		console << con::error << con::func << "CreateTexture - shadow map failed" << con::endl;
 		console << con::error << con::func << "critical error is detected" << con::endl;
@@ -97,9 +100,8 @@ void GAMESYSTEM::D3DInitialize(bool _windowed, D3DDEVTYPE _deviceType)
 	}
 
 	// 그림자 맵과 동일한 크기의 깊이버퍼도 만들어줘야 한다.
-	if (FAILED(device->CreateDepthStencilSurface(desc.Width, desc.Height,
-		D3DFMT_D24X8, D3DMULTISAMPLE_NONE, 0, TRUE,
-		&gpShadowDepthStencil, NULL)))
+	if (FAILED(device->CreateDepthStencilSurface(winSize.right, winSize.bottom,
+		D3DFMT_D24X8, D3DMULTISAMPLE_NONE, 0, TRUE, &shadowZBuildStencil, NULL)))
 	{
 		console << con::error << con::func << "CreateDepthStencilSurface - shadow map failed" << con::endl;
 		console << con::error << con::func << "critical error is detected" << con::endl;
@@ -109,9 +111,8 @@ void GAMESYSTEM::D3DInitialize(bool _windowed, D3DDEVTYPE _deviceType)
 
 
 
-	if (FAILED(device->CreateTexture(desc.Width, desc.Height,
-		1, D3DUSAGE_RENDERTARGET, desc.Format,
-		D3DPOOL_DEFAULT, &gpRenderTarget, NULL)))
+	if (FAILED(device->CreateTexture(winSize.right, winSize.bottom,
+		1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &shadowBlackWhiteBuildRT, NULL)))
 	{
 		console << con::error << con::func << "CreateTexture - gpRenderTarget failed" << con::endl;
 		console << con::error << con::func << "critical error is detected" << con::endl;
@@ -119,9 +120,8 @@ void GAMESYSTEM::D3DInitialize(bool _windowed, D3DDEVTYPE _deviceType)
 		throw RUNTIME_ERROR(CRITICAL_DIRECTX_ERROR);
 	}
 
-	if (FAILED(device->CreateTexture(desc.Width, desc.Height,
-		1, D3DUSAGE_RENDERTARGET, desc.Format,
-		D3DPOOL_DEFAULT, &VerticalBlurTexture, NULL)))
+	if (FAILED(device->CreateTexture(winSize.right, winSize.bottom,
+		1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &shadowVerticalBlurRT, NULL)))
 	{
 		console << con::error << con::func << "CreateTexture - gpRenderTarget failed" << con::endl;
 		console << con::error << con::func << "critical error is detected" << con::endl;
@@ -129,9 +129,8 @@ void GAMESYSTEM::D3DInitialize(bool _windowed, D3DDEVTYPE _deviceType)
 		throw RUNTIME_ERROR(CRITICAL_DIRECTX_ERROR);
 	}
 
-	if (FAILED(device->CreateTexture(desc.Width, desc.Height,
-		1, D3DUSAGE_RENDERTARGET, desc.Format,
-		D3DPOOL_DEFAULT, &HorizontalBlurTexture, NULL)))
+	if (FAILED(device->CreateTexture(winSize.right, winSize.bottom,
+		1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &shadowHorizontalBlurRT, NULL)))
 	{
 		console << con::error << con::func << "CreateTexture - gpRenderTarget failed" << con::endl;
 		console << con::error << con::func << "critical error is detected" << con::endl;
@@ -153,7 +152,6 @@ void GAMESYSTEM::D3DInitialize(bool _windowed, D3DDEVTYPE _deviceType)
 		throw RUNTIME_ERROR(CRITICAL_DIRECTX_ERROR);
 	}
 	default_texture = &texture["defaultTexture"];
-	shader->SetTexture("DiffuseMap_Tex", texture["defaultTexture"]);
 
 
 	testLight.Initialize(
@@ -165,7 +163,7 @@ void GAMESYSTEM::D3DInitialize(bool _windowed, D3DDEVTYPE _deviceType)
 	{
 		D3DXMATRIXA16 test_;
 		D3DXMatrixIdentity(&test_);
-		test_._43 = 12.485;
+		test_._43 = 12.485f;
 		screen.Initialize("Screen.obj", test_);
 		test_._43 = 0;
 		floor.Initialize("Floor.obj", test_);
@@ -190,6 +188,7 @@ void GAMESYSTEM::D3DInitialize(bool _windowed, D3DDEVTYPE _deviceType)
 	{
 		if (e.error == MODEL_LOAD_ERROR)
 		{
+			cout << "error" << endl;
 		}
 	}
 

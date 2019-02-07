@@ -758,12 +758,12 @@ void MODEL::Move(D3DXMATRIXA16 _position)
 	position = _position;
 }
 
-void MODEL::Test()
+void MODEL::RenderShadow(const LPD3DXEFFECT& shader)
 {
 	if (bEnable)
 	{
-		gSystem.shader->SetMatrix("gMatWorld", &position);
-
+		shader->SetMatrix("WorldMatrix", &position);
+		shader->CommitChanges();
 		for (auto ptr = mesh.begin(); ptr != mesh.end(); ptr++)
 		{
 			if (gSystem.savedFVF != ptr->FVF)
@@ -790,21 +790,21 @@ void MODEL::Test()
 	}
 }
 
-void MODEL::ShadowRender()
+void MODEL::Render(const LPD3DXEFFECT& shader)
 {
 	if (bEnable)
 	{
-		gSystem.shadow->SetMatrix("gMatWorld", &position);
-
+		shader->SetMatrix("WorldMatrix", &position);
 		for (auto ptr = mesh.begin(); ptr != mesh.end(); ptr++)
 		{
+
 			if (gSystem.savedFVF != ptr->FVF)
 			{
 				gSystem.device->SetFVF(ptr->FVF);
 				gSystem.savedFVF = ptr->FVF;
 			}
-			gSystem.shadow->SetTexture("gMainTexture", *(ptr->mtl->texture));
-			gSystem.shadow->CommitChanges();
+			shader->SetTexture("MainTexture", *(ptr->mtl->texture));
+			shader->CommitChanges();
 
 			if (ptr->FVF == VertexXYZTEXNOR::FVF)
 				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZTEXNOR));
@@ -819,143 +819,6 @@ void MODEL::ShadowRender()
 				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZTEX));
 			else
 				cout << "error";
-			gSystem.device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, ptr->faceCount);
-		}
-	}
-}
-void MODEL::RenderVertical()
-{
-	if (bEnable)
-	{
-		for (auto ptr = mesh.begin(); ptr != mesh.end(); ptr++)
-		{
-			if (gSystem.savedFVF != ptr->FVF)
-			{
-				gSystem.device->SetFVF(ptr->FVF);
-				gSystem.savedFVF = ptr->FVF;
-			}
-			if (ptr->FVF == VertexXYZTEXNOR::FVF)
-				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZTEXNOR));
-
-			else if (ptr->FVF == VertexXYZ::FVF)
-				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZ));
-
-			else if (ptr->FVF == VertexXYZNOR::FVF)
-				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZNOR));
-
-			else if (ptr->FVF == VertexXYZTEX::FVF)
-				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZTEX));
-			else
-				cout << "error";
-
-			gSystem.device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, ptr->faceCount);
-		}
-	}
-}
-void MODEL::SoftShadow()
-{
-	if (bEnable)
-	{
-		gSystem.SoftShadow->SetMatrix("WorldMatrix", &position);
-
-		for (auto ptr = mesh.begin(); ptr != mesh.end(); ptr++)
-		{
-			if (gSystem.savedFVF != ptr->FVF)
-			{
-				gSystem.device->SetFVF(ptr->FVF);
-				gSystem.savedFVF = ptr->FVF;
-			}
-			gSystem.SoftShadow->SetTexture("MainTexture", *(ptr->mtl->texture));
-			gSystem.SoftShadow->CommitChanges();
-
-			if (ptr->FVF == VertexXYZTEXNOR::FVF)
-				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZTEXNOR));
-
-			else if (ptr->FVF == VertexXYZ::FVF)
-				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZ));
-
-			else if (ptr->FVF == VertexXYZNOR::FVF)
-				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZNOR));
-
-			else if (ptr->FVF == VertexXYZTEX::FVF)
-				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZTEX));
-			else
-				cout << "error";
-
-			gSystem.device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, ptr->faceCount);
-		}
-	}
-}
-void MODEL::test3()
-{
-	if (bEnable)
-	{
-		gSystem.MainShader->SetMatrix("WorldMatrix", &position);
-		for (auto ptr = mesh.begin(); ptr != mesh.end(); ptr++)
-		{
-			if (gSystem.savedFVF != ptr->FVF)
-			{
-				gSystem.device->SetFVF(ptr->FVF);
-				gSystem.savedFVF = ptr->FVF;
-			}
-			gSystem.MainShader->SetTexture("MainTexture", *(ptr->mtl->texture));
-			gSystem.MainShader->CommitChanges();
-
-			if (ptr->FVF == VertexXYZTEXNOR::FVF)
-				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZTEXNOR));
-
-			else if (ptr->FVF == VertexXYZ::FVF)
-				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZ));
-
-			else if (ptr->FVF == VertexXYZNOR::FVF)
-				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZNOR));
-
-			else if (ptr->FVF == VertexXYZTEX::FVF)
-				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZTEX));
-			else
-				cout << "error";
-
-			gSystem.device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, ptr->faceCount);
-		}
-	}
-}
-
-void MODEL::Render()
-{
-	if (bEnable)
-	{
-		gSystem.shader->SetMatrix("gMatWorld", &position);
-
-		for (auto ptr = mesh.begin(); ptr != mesh.end(); ptr++)
-		{
-			if (gSystem.savedFVF != ptr->FVF)
-			{
-				gSystem.device->SetFVF(ptr->FVF);
-				gSystem.savedFVF = ptr->FVF;
-			}
-
-			gSystem.shader->SetTechnique("VTN");
-
-			gSystem.shader->SetVector("Ambient", &ptr->mtl->material.ambient);
-			gSystem.shader->SetVector("Diffuse", &ptr->mtl->material.diffuse);
-			gSystem.shader->SetVector("Specular", &ptr->mtl->material.specular);
-			gSystem.shader->SetTexture("DiffuseTexture", *(ptr->mtl->texture));
-			gSystem.shader->CommitChanges();
-
-			if (ptr->FVF == VertexXYZTEXNOR::FVF)
-				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZTEXNOR));
-
-			else if (ptr->FVF == VertexXYZ::FVF)
-				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZ));
-
-			else if (ptr->FVF == VertexXYZNOR::FVF)
-				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZNOR));
-
-			else if (ptr->FVF == VertexXYZTEX::FVF)
-				gSystem.device->SetStreamSource(0, ptr->VB, 0, sizeof(VertexXYZTEX));
-			else
-				cout << "error";
-		
 			gSystem.device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, ptr->faceCount);
 		}
 	}

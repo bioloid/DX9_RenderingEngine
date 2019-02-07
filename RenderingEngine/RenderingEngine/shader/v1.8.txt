@@ -1,3 +1,11 @@
+Update Log v1.8.1
+
+- shader
+	- SamplingShader
+		- up, down sampling shader
+- TEXTURECLASS 
+	- using D3DXMatrixOrthoRH function
+
 Update Log v1.8.0
 
 - shadow

@@ -79,6 +79,9 @@
     <Filter Include="소스 파일\GameSystem\GAME\LIGHT">
       <UniqueIdentifier>{70e332b6-f9d8-4a2e-963c-99c34a8a388d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\GameSystem\TEXTURERENDER">
+      <UniqueIdentifier>{eec6f0c9-76b1-40ba-9526-3608d7e0bba3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CONSOLE.cpp">
@@ -132,6 +135,12 @@
     <ClCompile Include="D3DInitialize.cpp">
       <Filter>소스 파일\GameSystem\GAMESYSTEM</Filter>
     </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>소스 파일\GameSystem\GAMESYSTEM</Filter>
+    </ClCompile>
+    <ClCompile Include="TEXTURERENDER.cpp">
+      <Filter>소스 파일\GameSystem\TEXTURERENDER</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CONSOLE.h">
@@ -178,6 +187,9 @@
     </ClInclude>
     <ClInclude Include="LIGHT.h">
       <Filter>소스 파일\GameSystem\GAME\LIGHT</Filter>
+    </ClInclude>
+    <ClInclude Include="TEXTURERENDER.h">
+      <Filter>소스 파일\GameSystem\TEXTURERENDER</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -232,6 +244,9 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="shader\HorizontalBlur.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="shader\SamplingShader.fx">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

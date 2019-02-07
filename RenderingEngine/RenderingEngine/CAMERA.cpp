@@ -29,16 +29,12 @@ void CAMERA::Initialize()
 	near_ = 1.0f; far_ = 1000.0f;
 
 	fov = 1.047183f;	// 60 degree in radian
+
 	angle[0] = 1.5707745f; // 90 degree in radian
 	angle[1] = 0.0f;
-	angle[0] = 3.14f* 0.5;
-	angle[1] = 0;
-	position = { 0 , 5 , -10 };
-//	position = { 0.0f, 0.0f, -5.0f };
-	up = { 0.0f, 1.0f, 0.0f };
 
-	CalculateConst();
-	SetPosition();
+	position = { 0 , 5 , -10 };
+	up = { 0.0f, 1.0f, 0.0f };
 }
 void CAMERA::Move(unsigned int _data)
 {
@@ -75,32 +71,27 @@ void CAMERA::Move(unsigned int _data)
 	}
 	else
 		return;
-	D3DXMatrixLookAtLH(&gSystem.viewmatrix, &position, &target, &up);
-	D3DXMATRIXA16 gMatViewProjection;
-	gMatViewProjection = gSystem.viewmatrix * gSystem.projmatrix;
-	gSystem.shader->SetMatrix("gMatViewProjection", &gMatViewProjection);
-}
-void CAMERA::Set()
-{
-	target = position + lookx * length;
-	D3DXMatrixLookAtLH(&gSystem.viewmatrix, &position, &target, &up);
-	D3DXMatrixPerspectiveFovLH(&gSystem.projmatrix, fov, (float)gSystem.winSize.right / (float)gSystem.winSize.bottom, near_, far_);
-	gMatViewProjection = gSystem.viewmatrix * gSystem.projmatrix;
 }
 
-void CAMERA::SetPosition()
+
+void CAMERA::SetViewProjectionMatrix(const LPD3DXEFFECT& shader)
+{
+
+	shader->SetMatrix("ViewProjectionMatrix", &viewProjectionMatrix);
+}
+
+void CAMERA::SetPositionVector(const LPD3DXEFFECT & shader)
+{
+	shader->SetVector("CameraPosition", &D3DXVECTOR4(position));
+}
+
+void CAMERA::Update()
 {
 	CalculateConst();
-	Set();
-	gSystem.shader->SetMatrix("gMatViewProjection", &gMatViewProjection);
+	CalculateMatrix();
 }
-void CAMERA::RenderSoftShadow()
-{
-	CalculateConst();
-	Set();
-	gSystem.SoftShadow->SetMatrix("ViewProjectionMatrix", &gMatViewProjection);
-}
-void CAMERA::rotation(int _moveX, int _moveY)
+
+void CAMERA::MouseMove(int _moveX, int _moveY)
 {
 	if (gSystem.mouse.IsMouseDown(MOUSE_LEFT) && (_moveX != 0 || _moveY != 0))
 	{
@@ -117,10 +108,18 @@ void CAMERA::rotation(int _moveX, int _moveY)
 
 			angle[1] += speed.pi * _moveY;
 		}
-		CalculateConst();
-		SetPosition();
 	}
 }
+
+void CAMERA::CalculateMatrix()
+{
+	
+	target = position + lookx * length;
+	D3DXMatrixLookAtLH(&viewMatrix, &position, &target, &up);
+	D3DXMatrixPerspectiveFovLH(&projectionMatrix, fov, (float)gSystem.winSize.right / (float)gSystem.winSize.bottom, near_, far_);
+	viewProjectionMatrix = viewMatrix * projectionMatrix;
+}
+
 void CAMERA::CalculateConst()
 {
 	constant[0][0] = (float)sin(angle[0]);

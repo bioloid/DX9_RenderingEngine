@@ -1,5 +1,6 @@
 #include "GAMESYSTEM.h"
 
+#pragma warning(disable:4477)
 LRESULT CALLBACK GAMESYSTEM::MessageHandler
 (HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -103,6 +104,9 @@ void GAMESYSTEM::MSGPrint(int x, int y)
 	FontBox.left = y;
 	font->DrawText(NULL, str, -1, &FontBox, DT_NOCLIP, D3DCOLOR_XRGB(0, 0, 0));
 }
+
+
+
 
 void GAMESYSTEM::DrawMSG()
 {

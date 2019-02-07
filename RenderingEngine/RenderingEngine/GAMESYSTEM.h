@@ -13,7 +13,7 @@
 #define CONDEBUG true
 #endif
 
-#define DEFAULTVER "1.6.2"
+#define DEFAULTVER "1.8.0"
 #define DEFAULTBUILDNUMBER 1
 
 //	DirectX Includes
@@ -43,6 +43,7 @@
 #include "CAMERA.h"
 #include "MODEL.h"
 #include "LIGHT.h"
+#include "TEXTURERENDER.h"
 
 //	Other Includes
 //
@@ -66,24 +67,29 @@ private:
 	//
 	IDirect3DDevice9*	device = NULL;
 	ID3DXFont*			font = NULL;
-	LPD3DXEFFECT		shader = NULL;
-	LPD3DXEFFECT		shadow = NULL;
 
-	LPD3DXEFFECT		HorizontalShader = NULL;
-	LPD3DXEFFECT		VerticalShader = NULL;
-	LPD3DXEFFECT		SoftShadow = NULL;
-	LPD3DXEFFECT		MainShader = NULL;
+	//	Shader
+	//
+	LPD3DXEFFECT		shadowZBuildShader = NULL;
+	LPD3DXEFFECT		shadowHorizontalBlurShader = NULL;
+	LPD3DXEFFECT		shadowVerticalBlurShader = NULL;
+	LPD3DXEFFECT		shadowBlackWhiteBuildShader = NULL;
+	LPD3DXEFFECT		lastSceneShader = NULL;
+	LPD3DXEFFECT		SamplingShader = NULL;
 
-	LPDIRECT3DTEXTURE9		gpShadowRenderTarget = NULL;
-	LPDIRECT3DSURFACE9		gpShadowDepthStencil = NULL;
+	LPDIRECT3DTEXTURE9		shadowZBuildRT = NULL;
+	LPDIRECT3DSURFACE9		shadowZBuildStencil = NULL;
+	LPDIRECT3DTEXTURE9		shadowBlackWhiteBuildRT = NULL;
+	LPDIRECT3DTEXTURE9		shadowVerticalBlurRT = NULL;
+	LPDIRECT3DTEXTURE9		shadowHorizontalBlurRT = NULL;
 
-	LPDIRECT3DTEXTURE9		gpRenderTarget = NULL;
-	LPDIRECT3DTEXTURE9		VerticalBlurTexture = NULL;
-	LPDIRECT3DTEXTURE9		HorizontalBlurTexture = NULL;
+
+	LPDIRECT3DSURFACE9 backUpMainRT = NULL;
+	LPDIRECT3DSURFACE9 bakcUpMainStencil = NULL;
+	LPDIRECT3DSURFACE9 tmpSurface = NULL;
+	UINT shaderNumPass;
 
 
-	D3DXMATRIXA16		viewmatrix;
-	D3DXMATRIXA16		projmatrix;
 	DWORD				savedFVF = 0UL;	// MODEL::VertexXYZ::FVF;
 	IDirect3DTexture9**	default_texture = NULL;
 	map<string, IDirect3DTexture9*> texture;
@@ -117,10 +123,11 @@ private:
 	CPU					cpu;
 	RAM					ram;
 	CAMERA				camera;
+	TEXTURERENDER		downSampler, upSampler;
+
 	MODEL				floor, screen;
 	MODEL				box0, box1, box2, box3;
 	LIGHT				testLight;
-
 
 
 
@@ -132,10 +139,20 @@ public:
 private:
 	void D3DEffectInitialize();
 	void Render();
-
 	void DrawMSG();
 	void MSGPrint(int, int);
 
+	void UpSamping();
+	void DownSamping();
+	void ShadowBuild();
+	void HorizontalBlur();
+	void VerticalBlur();
+	void DrawScene();
+	void LightZBuild();
+	void StartScene();
+	void EndScene();
+
+	void ShaderLoad(string _name, LPD3DXEFFECT& shader);
 	void Test();
 
 public:
@@ -145,6 +162,7 @@ public:
 	void EndGame();
 	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
 	
+
 	GAMESYSTEM();
 	~GAMESYSTEM();
 
@@ -156,6 +174,7 @@ public:
 	friend class MOUSE;
 	friend class RUNTIME_ERROR;
 	friend class LIGHT;
+	friend class TEXTURERENDER;
 };
 
 //	Other Variables

@@ -10,25 +10,25 @@ private:
 
 
 public:
-	D3DXMATRIXA16 matLightViewProjection;
-	D3DXMATRIXA16 matLightView;
-	D3DXMATRIXA16 matLightProjection;
-
-	struct LIGHTDATA
+	D3DXMATRIXA16 ViewProjectionMatrix;
+	D3DXMATRIXA16 View;
+	D3DXMATRIXA16 Projection;
+	float rotateCount = 0.0f;
+	struct DATA
 	{
 		D3DXVECTOR4 position;
 		D3DXVECTOR4 lookTo;
-		D3DXVECTOR4 color;
 	};
 	string		name;
 	bool		active;
-	LIGHTDATA	data;
+	DATA	data;
 	void Initialize(D3DXVECTOR4, D3DXVECTOR4, D3DXVECTOR4, string);
 	void Disable(bool);
-	void RenderShader();
-	void RenderShadow();
+	void Rotate();
+	void Update();
+	void SetViewProjectionMatrix(const LPD3DXEFFECT& shader);
+	void SetData(const LPD3DXEFFECT& shader);
 	void Release();
-	void RenderSoftShadow();
 	LIGHT();
 	~LIGHT();
 

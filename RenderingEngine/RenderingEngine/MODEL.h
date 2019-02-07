@@ -49,15 +49,11 @@ public:
 	void ReadF(char*, DWORD, int*);
 	void ReadFace(char*);
 	void Move(D3DXMATRIXA16);
-	void Test();
-	void Render();
-	void ShadowRender();
 	void Release();
 
+	void RenderShadow(const LPD3DXEFFECT& shader);
+	void Render(const LPD3DXEFFECT& shader);
 
-	void RenderVertical();
-	void SoftShadow();
-	void test3();
 
 	int  cStrFind(char*, const char*);
 	bool bEnable = true;

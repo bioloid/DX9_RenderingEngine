@@ -76,6 +76,7 @@ struct MODEL::MTL
 	};
 	bool illum;
 	IDirect3DTexture9** texture; // ptr
+	int blockCode;
 	MATERIAL material;
 	string* name;
 };

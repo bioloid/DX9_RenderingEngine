@@ -25,19 +25,19 @@ namespace con
 class CONSOLE
 {
 public:
-	HWND			consoleHND;
+	HWND						consoleHND;
 
-	string defaultPath = "Data\\Console\\";
-	map<string, list<string>> checkData;
-	string			function;
-	string			function_before;
+	string						defaultPath = "Data\\Console\\";
+	map<string, list<string>>	checkData;
+	string						function;
+	string						function_before;
 
-	list<string>	history;
-	list<string>::iterator hisptr;
+	list<string>				history;
+	list<string>::iterator		hisptr;
 
-	string			userinput;
-	list<string>	outinput;
-	list<string>	tabData;
+	string						userinput;
+	list<string>				outinput;
+	list<string>				tabData;
 
 	void Input();
 	void Check();

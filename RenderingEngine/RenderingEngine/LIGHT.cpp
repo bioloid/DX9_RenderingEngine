@@ -27,7 +27,7 @@ void LIGHT::Rotate()
 	{
 		rotateCount = 0;
 	}
-	data.position = { 10 * cos(rotateCount), 5, 10 * sin(rotateCount), 1 };
+	data.position = { 8 * cos(rotateCount), 2, 8 * sin(rotateCount), 1 };
 }
 void LIGHT::Update()
 {

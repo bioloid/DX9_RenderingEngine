@@ -11,13 +11,15 @@ void GAMESYSTEM::Render()
 		
 		ShadowBuild();
 
-		DownSamping();
+	//	DownSamping();
 
-		VerticalBlur();
+	//	VerticalBlur();
 
-		HorizontalBlur();
+	//	HorizontalBlur();
+	//	for (int i = 0; i < 0; i++)
+	//		Test();
 
-		UpSamping();
+	//	UpSamping();
 
 		DrawScene();
 	}

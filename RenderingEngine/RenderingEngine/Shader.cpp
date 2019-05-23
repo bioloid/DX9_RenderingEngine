@@ -1,6 +1,63 @@
 #include "GAMESYSTEM.h"
 #define SCREEN_X 1.0f / gSystem.winSize.right
 #define SCREEN_Y 1.0f / gSystem.winSize.bottom
+void GAMESYSTEM::Test()
+{
+	if (SUCCEEDED(shadowVerticalBlurRT->GetSurfaceLevel(0, &tmpSurface)))
+	{
+		device->SetRenderTarget(0, tmpSurface);
+		tmpSurface->Release();
+		tmpSurface = NULL;
+	}
+	shadowVerticalBlurShader->SetMatrix("OrthoMatrix", &downSampler.orthoMatrix);
+	downSampler.SetVB();
+	shadowVerticalBlurShader->SetTexture("BlurTexture", shadowHorizontalBlurRT);
+	shadowHorizontalBlurShader->SetRawValue("Screen", &D3DXVECTOR2(SCREEN_X, SCREEN_Y), 0, sizeof(D3DXVECTOR2));
+
+	device->Clear(0, 0, D3DCLEAR_TARGET, 0xFFFFFFFF, 1.0f, 0);
+
+	shadowVerticalBlurShader->Begin(&shaderNumPass, NULL);
+	{
+		for (UINT i = 0; i < shaderNumPass; i++)
+		{
+			shadowVerticalBlurShader->BeginPass(i);
+			{
+				gSystem.device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 6);
+			}
+			shadowVerticalBlurShader->EndPass();
+		}
+	}
+	shadowVerticalBlurShader->End();
+
+
+
+	if (SUCCEEDED(shadowHorizontalBlurRT->GetSurfaceLevel(0, &tmpSurface)))
+	{
+		device->SetRenderTarget(0, tmpSurface);
+		tmpSurface->Release();
+		tmpSurface = NULL;
+	}
+	shadowHorizontalBlurShader->SetMatrix("OrthoMatrix", &downSampler.orthoMatrix);
+	downSampler.SetVB();
+	shadowHorizontalBlurShader->SetTexture("BlurTexture", shadowVerticalBlurRT);
+	shadowHorizontalBlurShader->SetRawValue("Screen", &D3DXVECTOR2(SCREEN_X, SCREEN_Y), 0, sizeof(D3DXVECTOR2));
+
+	device->Clear(0, 0, D3DCLEAR_TARGET, 0xFFFFFFFF, 1.0f, 0);
+
+	shadowHorizontalBlurShader->Begin(&shaderNumPass, NULL);
+	{
+		for (UINT i = 0; i < shaderNumPass; i++)
+		{
+			shadowHorizontalBlurShader->BeginPass(i);
+			{
+				gSystem.device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 6);
+			}
+			shadowHorizontalBlurShader->EndPass();
+		}
+	}
+	shadowHorizontalBlurShader->End();
+
+}
 void GAMESYSTEM::UpSamping()
 {
 	if (SUCCEEDED(upSampler.renderTraget->GetSurfaceLevel(0, &tmpSurface)))
@@ -70,9 +127,8 @@ void GAMESYSTEM::LightZBuild()
 	}
 	device->SetDepthStencilSurface(shadowZBuildStencil);
 
-	device->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0);
-
-
+	device->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER , 0xFFFFFFFF, 1.0f, 0);
+	//D3DCLEAR_STENCIL
 	testLight.SetViewProjectionMatrix(shadowZBuildShader);
 
 	shadowZBuildShader->Begin(&shaderNumPass, NULL);
@@ -125,26 +181,18 @@ void GAMESYSTEM::ShadowBuild()
 }
 void GAMESYSTEM::VerticalBlur()
 {
-
-	camera.Backup();
-	camera.position.x = 0;
-	camera.position.y = 0;
-	camera.position.z = 0;
-	camera.angle[0] = 3.14f / 2.0f;
-	camera.angle[1] = 0;
-
 	if (SUCCEEDED(shadowVerticalBlurRT->GetSurfaceLevel(0, &tmpSurface)))
 	{
 		device->SetRenderTarget(0, tmpSurface);
 		tmpSurface->Release();
 		tmpSurface = NULL;
 	}
-	camera.Update();
-	camera.SetViewProjectionMatrix(shadowVerticalBlurShader);
+	shadowVerticalBlurShader->SetMatrix("OrthoMatrix", &downSampler.orthoMatrix);
+	downSampler.SetVB();
 	shadowVerticalBlurShader->SetTexture("BlurTexture", downSampler.renderTraget);
-	shadowVerticalBlurShader->SetRawValue("Screen", &D3DXVECTOR2(1.0f / 1280.0f, 1.0f / 720.0f), 0, sizeof(D3DXVECTOR2));
+	shadowHorizontalBlurShader->SetRawValue("Screen", &D3DXVECTOR2(SCREEN_X, SCREEN_Y), 0, sizeof(D3DXVECTOR2));
 
-	device->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0);
+	device->Clear(0, 0, D3DCLEAR_TARGET, 0xFFFFFFFF, 1.0f, 0);
 
 	shadowVerticalBlurShader->Begin(&shaderNumPass, NULL);
 	{
@@ -152,7 +200,7 @@ void GAMESYSTEM::VerticalBlur()
 		{
 			shadowVerticalBlurShader->BeginPass(i);
 			{
-				screen.RenderShadow(shadowVerticalBlurShader);
+				gSystem.device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 6);
 			}
 			shadowVerticalBlurShader->EndPass();
 		}
@@ -171,11 +219,12 @@ void GAMESYSTEM::HorizontalBlur()
 		tmpSurface->Release();
 		tmpSurface = NULL;
 	}
-	camera.SetViewProjectionMatrix(shadowHorizontalBlurShader);
+	shadowHorizontalBlurShader->SetMatrix("OrthoMatrix", &downSampler.orthoMatrix);
+	downSampler.SetVB();
 	shadowHorizontalBlurShader->SetTexture("BlurTexture", shadowVerticalBlurRT);
 	shadowHorizontalBlurShader->SetRawValue("Screen", &D3DXVECTOR2(SCREEN_X, SCREEN_Y), 0, sizeof(D3DXVECTOR2));
 
-	device->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0);
+	device->Clear(0, 0, D3DCLEAR_TARGET, 0xFFFFFFFF, 1.0f, 0);
 
 	shadowHorizontalBlurShader->Begin(&shaderNumPass, NULL);
 	{
@@ -183,7 +232,7 @@ void GAMESYSTEM::HorizontalBlur()
 		{
 			shadowHorizontalBlurShader->BeginPass(i);
 			{
-				screen.RenderShadow(shadowHorizontalBlurShader);
+				gSystem.device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 6);
 			}
 			shadowHorizontalBlurShader->EndPass();
 		}
@@ -198,17 +247,16 @@ void GAMESYSTEM::DrawScene()
 {
 	device->SetRenderTarget(0, backUpMainRT);
 	device->SetDepthStencilSurface(bakcUpMainStencil);
-
-	camera.Restore();
-	camera.Update();
 	camera.SetViewProjectionMatrix(lastSceneShader);
 	camera.SetPositionVector(lastSceneShader);
 
 	device->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0);
 	testLight.SetViewProjectionMatrix(lastSceneShader);
 	testLight.SetData(lastSceneShader);
-	lastSceneShader->SetTexture("BlurTexture", upSampler.renderTraget);
+//	lastSceneShader->SetTexture("BlurTexture", upSampler.renderTraget);
+	lastSceneShader->SetTexture("BlurTexture", shadowBlackWhiteBuildRT);
 
+	
 	lastSceneShader->Begin(&shaderNumPass, NULL);
 	{
 		for (UINT i = 0; i < shaderNumPass; i++)
@@ -226,7 +274,6 @@ void GAMESYSTEM::DrawScene()
 	}
 	lastSceneShader->End();
 	DrawMSG();
-
 }
 
 void GAMESYSTEM::StartScene()

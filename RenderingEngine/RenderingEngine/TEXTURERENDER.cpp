@@ -56,7 +56,6 @@ void TEXTURERENDER::SetVB()
 		gSystem.device->SetFVF(MODEL::VertexXYZTEX::FVF);
 		gSystem.savedFVF = MODEL::VertexXYZTEX::FVF;
 	}
-
 	gSystem.device->SetStreamSource(0, VB, 0, sizeof(MODEL::VertexXYZTEX));
 }
 void TEXTURERENDER::Release()

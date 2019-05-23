@@ -1,12 +1,3 @@
-float4x4 WorldMatrix;
-float4x4 ViewProjectionMatrix;
-texture BlurTexture;
-float2 Screen;
-sampler2D BlurSampler = sampler_state
-{
-    texture = BlurTexture;
-};
-
 struct VInput
 {
     float4 Position : POSITION;
@@ -16,52 +7,54 @@ struct VInput
 struct VOutput
 {
     float4 Position : POSITION;
-    float2 UV0 : TEXCOORD0;
-    float2 UV1 : TEXCOORD1;
-    float2 UV2 : TEXCOORD2;
-    float2 UV3 : TEXCOORD3;
-    float2 UV4 : TEXCOORD4;
-    float2 UV5 : TEXCOORD5;
-    float2 UV6 : TEXCOORD6;
+    float2 UV : TEXCOORD0;
 };
 
 struct PInput
 {
-    float2 UV0 : TEXCOORD0;
-    float2 UV1 : TEXCOORD1;
-    float2 UV2 : TEXCOORD2;
-    float2 UV3 : TEXCOORD3;
-    float2 UV4 : TEXCOORD4;
-    float2 UV5 : TEXCOORD5;
-    float2 UV6 : TEXCOORD6;
+    float2 UV : TEXCOORD0;
+};
+
+float4x4 OrthoMatrix;
+texture BlurTexture;
+float2 Screen;
+sampler2D BlurSampler = sampler_state
+{
+    texture = BlurTexture;
 };
 
 VOutput mainVertex(VInput Input)
 {
     VOutput Output;
-    Output.Position = mul(Input.Position, WorldMatrix);
-    Output.Position = mul(Output.Position, ViewProjectionMatrix);
-    Output.UV0 = Input.UV;
-    Output.UV1 = Input.UV + float2(Screen.x,     0);
-    Output.UV2 = Input.UV + float2(Screen.x * 2, 0);
-    Output.UV3 = Input.UV + float2(Screen.x * 3, 0);
-    Output.UV4 = Input.UV - float2(Screen.x,     0);
-    Output.UV5 = Input.UV - float2(Screen.x * 2, 0);
-    Output.UV6 = Input.UV - float2(Screen.x * 3, 0);
+    Output.Position = mul(Input.Position, OrthoMatrix);
+    Output.UV = Input.UV;
     return Output;
 }
 
 float4 mainPixel(PInput Input) : COLOR
 {
-    float4 Output = float4(0, 0, 0, 0);
-//    return tex2D(BlurSampler, Input.UV0);
-    Output += tex2D(BlurSampler, Input.UV0) * 0.2f;
-    Output += tex2D(BlurSampler, Input.UV1) * 0.171428f;
-    Output += tex2D(BlurSampler, Input.UV2) * 0.142857f;
-    Output += tex2D(BlurSampler, Input.UV3) * 0.085714f;
-    Output += tex2D(BlurSampler, Input.UV4) * 0.171428f;
-    Output += tex2D(BlurSampler, Input.UV5) * 0.142857f;
-    Output += tex2D(BlurSampler, Input.UV6) * 0.085714f;
+    float2 UV[8];
+    UV[0] = Input.UV + float2(Screen.x, 0);
+    UV[1] = Input.UV + float2(Screen.x * 2, 0);
+    UV[2] = Input.UV + float2(Screen.x * 3, 0);
+    UV[3] = Input.UV + float2(Screen.x * 4, 0);
+
+    UV[4] = Input.UV - float2(Screen.x,     0);
+    UV[5] = Input.UV - float2(Screen.x * 2, 0);
+    UV[6] = Input.UV - float2(Screen.x * 3, 0);
+    UV[7] = Input.UV - float2(Screen.x * 4, 0);
+    return tex2D(BlurSampler, Input.UV);
+
+    float4 Output = float4(0, 0, 0, 1);
+    Output += tex2D(BlurSampler, Input.UV) * 0.189189f;
+    Output += tex2D(BlurSampler, UV[0]) * 0.162162f;
+    Output += tex2D(BlurSampler, UV[1]) * 0.135135f;
+    Output += tex2D(BlurSampler, UV[2]) * 0.081081f;
+    Output += tex2D(BlurSampler, UV[3]) * 0.027027f;
+    Output += tex2D(BlurSampler, UV[4]) * 0.162162f;
+    Output += tex2D(BlurSampler, UV[5]) * 0.135135f;
+    Output += tex2D(BlurSampler, UV[6]) * 0.081081f;
+    Output += tex2D(BlurSampler, UV[7]) * 0.027027f;
     return Output;
 }
 // 3 5 6 7 6 5 3 = 35

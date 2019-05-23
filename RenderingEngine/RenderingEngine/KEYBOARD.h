@@ -1,5 +1,5 @@
-#ifndef _KEYBOARD_H__
-#define _KEYBOARD_H__
+#ifndef __KEYBOARD_H__
+#define __KEYBOARD_H__
 #include <Windows.h>
 #define MAXKEYCOUNT 128
 

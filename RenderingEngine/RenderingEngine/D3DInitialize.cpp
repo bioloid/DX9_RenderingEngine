@@ -68,7 +68,7 @@ void GAMESYSTEM::D3DInitialize(bool _windowed, D3DDEVTYPE _deviceType)
 	try
 	{
 		D3DEffectInitialize();
-		downSampler.Initialize(true, winSize.right / 2, winSize.bottom / 2, 0.0f, 1.0f);
+		downSampler.Initialize(false, winSize.right, winSize.bottom, 0.0f, 1.0f);
 		upSampler.Initialize(false, winSize.right, winSize.bottom, 0.0f, 1.0f);
 	}
 	catch (RUNTIME_ERROR &e)
@@ -90,7 +90,8 @@ void GAMESYSTEM::D3DInitialize(bool _windowed, D3DDEVTYPE _deviceType)
 
 
 	// 렌더타깃을 만든다.
-	if (FAILED(device->CreateTexture(winSize.right, winSize.bottom,
+	const int size = 512;
+	if (FAILED(device->CreateTexture(size, size,
 		1, D3DUSAGE_RENDERTARGET, D3DFMT_R32F, D3DPOOL_DEFAULT, &shadowZBuildRT, NULL)))
 	{
 		console << con::error << con::func << "CreateTexture - shadow map failed" << con::endl;
@@ -100,7 +101,7 @@ void GAMESYSTEM::D3DInitialize(bool _windowed, D3DDEVTYPE _deviceType)
 	}
 
 	// 그림자 맵과 동일한 크기의 깊이버퍼도 만들어줘야 한다.
-	if (FAILED(device->CreateDepthStencilSurface(winSize.right, winSize.bottom,
+	if (FAILED(device->CreateDepthStencilSurface(size, size,
 		D3DFMT_D24X8, D3DMULTISAMPLE_NONE, 0, TRUE, &shadowZBuildStencil, NULL)))
 	{
 		console << con::error << con::func << "CreateDepthStencilSurface - shadow map failed" << con::endl;
@@ -111,7 +112,7 @@ void GAMESYSTEM::D3DInitialize(bool _windowed, D3DDEVTYPE _deviceType)
 
 
 
-	if (FAILED(device->CreateTexture(winSize.right, winSize.bottom,
+	if (FAILED(device->CreateTexture(size, size,
 		1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &shadowBlackWhiteBuildRT, NULL)))
 	{
 		console << con::error << con::func << "CreateTexture - gpRenderTarget failed" << con::endl;
@@ -155,7 +156,7 @@ void GAMESYSTEM::D3DInitialize(bool _windowed, D3DDEVTYPE _deviceType)
 
 
 	testLight.Initialize(
-		D3DXVECTOR4(0.0f, 20.0f, 20.0f, 0.0f),
+		D3DXVECTOR4(0.0f, 20.0f, 10.0f, 0.0f),
 		D3DXVECTOR4(0.0f, 0.0f, 0.0f, 0.0f),
 		D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f), "light_0");
 
@@ -163,18 +164,16 @@ void GAMESYSTEM::D3DInitialize(bool _windowed, D3DDEVTYPE _deviceType)
 	{
 		D3DXMATRIXA16 test_;
 		D3DXMatrixIdentity(&test_);
-		test_._43 = 12.485f;
-		screen.Initialize("Screen.obj", test_);
 		test_._43 = 0;
 		floor.Initialize("Floor.obj", test_);
 		test_._41 = 1; test_._43 = 1;
-		box0.Initialize("Tree.obj", test_);
+		box0.Initialize("cube.obj", test_);
 		test_._41 = 1; test_._43 = -1;
-		box1.Initialize("box2.obj", test_);
+		box1.Initialize("cube.obj", test_);
 		test_._41 = -1; test_._43 = 1;
-		box2.Initialize("box2.obj", test_);
+		box2.Initialize("cube.obj", test_);
 		test_._41 = -1; test_._43 = -1;
-		box3.Initialize("box2.obj", test_);
+		box3.Initialize("cube.obj", test_);
 
 		//	test.Initialize("lowpolytree.obj", test_);
 		//	test.Initialize("test.obj", test_);

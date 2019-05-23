@@ -25,23 +25,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR cmdLine, i
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	//	_CrtSetBreakAlloc(469);
 #endif
-	try 
-	{
-		gSystem.Initialize(hInstance, prevInstance, cmdLine, showCmd);
-	}
-	catch (RUNTIME_ERROR &e) 
-	{
-		return 1;
-	}
-	try 
-	{
-		gSystem.D3DInitialize(true, D3DDEVTYPE_HAL);
-	}
-	catch (RUNTIME_ERROR &e) 
-	{
-		gSystem.Release();
-		return 1;
-	}
+
+	gSystem.Initialize(hInstance, prevInstance, cmdLine, showCmd);
+	gSystem.D3DInitialize(true, D3DDEVTYPE_HAL);
+
 
 	cout << ">> ";
 	gSystem.Run();

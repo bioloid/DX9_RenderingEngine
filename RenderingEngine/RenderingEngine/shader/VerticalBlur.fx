@@ -7,27 +7,15 @@ struct VInput
 struct VOutput
 {
     float4 Position : POSITION;
-    float2 UV0 : TEXCOORD0;
-    float2 UV1 : TEXCOORD1;
-    float2 UV2 : TEXCOORD2;
-    float2 UV3 : TEXCOORD3;
-    float2 UV4 : TEXCOORD4;
-    float2 UV5 : TEXCOORD5;
-    float2 UV6 : TEXCOORD6;
+    float2 UV : TEXCOORD0;
 };
 
 struct PInput
 {
-    float2 UV0 : TEXCOORD0;
-    float2 UV1 : TEXCOORD1;
-    float2 UV2 : TEXCOORD2;
-    float2 UV3 : TEXCOORD3;
-    float2 UV4 : TEXCOORD4;
-    float2 UV5 : TEXCOORD5;
-    float2 UV6 : TEXCOORD6;
+    float2 UV : TEXCOORD0;
 };
-float4x4 WorldMatrix;
-float4x4 ViewProjectionMatrix;
+float4x4 OrthoMatrix;
+
 texture BlurTexture;
 float2 Screen;
 
@@ -40,36 +28,45 @@ sampler2D BlurSampler = sampler_state
 VOutput mainVertex(VInput Input)
 {
     VOutput Output;
-    Output.Position = mul(Input.Position, WorldMatrix);
-    Output.Position = mul(Output.Position, ViewProjectionMatrix);
-    Output.UV0 = Input.UV;
-    Output.UV1 = Input.UV + float2(0, Screen.y);
-    Output.UV2 = Input.UV + float2(0, Screen.y*2);
-    Output.UV3 = Input.UV + float2(0, Screen.y*3);
-    Output.UV4 = Input.UV - float2(0, Screen.y);
-    Output.UV5 = Input.UV - float2(0, Screen.y*2);
-    Output.UV6 = Input.UV - float2(0, Screen.y*3);
+    Output.Position = mul(Input.Position, OrthoMatrix);
+    Output.UV = Input.UV;
     return Output;
 }
 
 float4 mainPixel(PInput Input) : COLOR
 {
-//    return tex2D(BlurSampler, Input.UV0);
-    float4 Output = float4(0, 1, 0, 1);
-    Output += tex2D(BlurSampler, Input.UV0) * 0.2f;
-    Output += tex2D(BlurSampler, Input.UV1) * 0.171428f;
-    Output += tex2D(BlurSampler, Input.UV2) * 0.142857f;
-    Output += tex2D(BlurSampler, Input.UV3) * 0.085714f;
-    Output += tex2D(BlurSampler, Input.UV4) * 0.171428f;
-    Output += tex2D(BlurSampler, Input.UV5) * 0.142857f;
-    Output += tex2D(BlurSampler, Input.UV6) * 0.085714f;
+    float2 UV[8];
+    UV[0] = Input.UV + float2(0, Screen.y);
+    UV[1] = Input.UV + float2(0, Screen.y * 2);
+    UV[2] = Input.UV + float2(0, Screen.y * 3);
+    UV[3] = Input.UV + float2(0, Screen.y * 4);
+
+    UV[4] = Input.UV - float2(0, Screen.y);
+    UV[5] = Input.UV - float2(0, Screen.y * 2);
+    UV[6] = Input.UV - float2(0, Screen.y * 3);
+    UV[7] = Input.UV - float2(0, Screen.y * 4);
+    return tex2D(BlurSampler, Input.UV);
+
+
+    float4 Output = float4(0, 0, 0, 1);
+    Output += tex2D(BlurSampler, Input.UV) * 0.189189f;
+    Output += tex2D(BlurSampler, UV[0]) * 0.162162f;
+    Output += tex2D(BlurSampler, UV[1]) * 0.135135f;
+    Output += tex2D(BlurSampler, UV[2]) * 0.081081f;
+    Output += tex2D(BlurSampler, UV[3]) * 0.027027f;
+    Output += tex2D(BlurSampler, UV[4]) * 0.162162f;
+    Output += tex2D(BlurSampler, UV[5]) * 0.135135f;
+    Output += tex2D(BlurSampler, UV[6]) * 0.081081f;
+    Output += tex2D(BlurSampler, UV[7]) * 0.027027f;
+
     return Output;
 }
-// 3 5 6 7 6 5 3 = 35
-// 0.085714f
-// 0.142857f
-// 0.171428f
-// 0.2f
+// 1 3 5 6 7 6 5 3 1 = 37
+// 0.027027f
+// 0.081081f
+// 0.135135f
+// 0.162162f
+// 0.189189f
 technique Vertical
 {
     pass Pass_0

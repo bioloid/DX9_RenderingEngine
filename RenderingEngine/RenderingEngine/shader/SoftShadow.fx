@@ -57,7 +57,7 @@ float4 mainPixel(PInput Input) : COLOR
     float4 shadowDepth = tex2D(ShadowSampler, UV);
     if (UV.y < 0 || UV.x < 0 || UV.y > 1 || UV.x > 1)
     {
-        return float4(1, 1, 1, 1);
+        return float4(1, 1, 1, alpha);
     }
 
     if (currentDepth > shadowDepth.r + 0.0005f)

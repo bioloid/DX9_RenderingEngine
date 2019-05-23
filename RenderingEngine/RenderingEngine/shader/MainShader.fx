@@ -83,7 +83,12 @@ float4 mainPixel(PInput Input) : COLOR
     float2 UV = Input.ShadowUV.xy / Input.ShadowUV.w;
     UV.y = -UV.y;
     UV = UV * 0.5f + 0.5f;
-
+    if (UV.y < 0 || UV.x < 0 || UV.y > 1 || UV.x > 1)
+    {
+//        return float4(1, 0, 1, 1);
+        return float4((ambient + diffuse + specular)
+    * mainTextureColor.rgb, mainTextureColor.w);
+    }
     float4 shadowDepth = tex2D(BlurSampler, UV);
 //    return shadowDepth;
     return float4((ambient + diffuse + specular)

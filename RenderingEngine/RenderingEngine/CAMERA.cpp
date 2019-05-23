@@ -31,7 +31,7 @@ void CAMERA::Initialize()
 	fov = 1.047183f;	// 60 degree in radian
 
 	angle[0] = 1.5707745f; // 90 degree in radian
-	angle[1] = 0.0f;
+	angle[1] = -0.5f;
 
 	position = { 0 , 5 , -10 };
 	up = { 0.0f, 1.0f, 0.0f };

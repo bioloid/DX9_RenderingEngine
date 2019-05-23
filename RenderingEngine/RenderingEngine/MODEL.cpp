@@ -741,10 +741,17 @@ void MODEL::ReadMtl(string _mtlFileName)
 		{
 			string textureFileName(readLine + 7);
 			textureFileName.pop_back();
-			gSystem.texture[*mtl.back().name] = NULL;
+			mtl.back().textureName = textureFileName;
+			gSystem.texture[textureFileName] = NULL;
+
+			cout << "new texture : " << mtl.back().name << endl;
+			cout << "texture address : " << &gSystem.texture[textureFileName] << endl;
+
 			if (SUCCEEDED(D3DXCreateTextureFromFile
-			(gSystem.device, (path + textureFileName).c_str(), &gSystem.texture[*mtl.back().name])))
-				mtl.back().texture = &gSystem.texture[*mtl.back().name];
+			(gSystem.device, (path + textureFileName).c_str(), &gSystem.texture[textureFileName])))
+			{
+				mtl.back().texture = &gSystem.texture[textureFileName];
+			}
 		}
 	}
 	fclose(mtlfile);

@@ -90,115 +90,68 @@ void GAMESYSTEM::Initialize
 	//
 	console.SetFunction("GAMESYSTEM::Initialize");
 
-	try
-	{
-		console.Initialize();
-		keyboard.Initialize();
-		mouse.Initialize();
-		time.Initialize();
-		cpu.Initialize();
-		ram.Initialize();
-	}
-	//	class error handling
-	//
-	catch (RUNTIME_ERROR &e)
-	{
-		if (e.error == CRITICAL_CLASS_ERROR)
-			throw e;
-	}
+	console.Initialize();
+	keyboard.Initialize();
+	mouse.Initialize();
+	time.Initialize();
+	cpu.Initialize();
+	ram.Initialize();
 
 	//	read program info
 	//
 	int build_number;
 	string version;
 	char build_number_tmp[16];
-
+	
 	ifstream version_read;
 	ofstream version_write;
 
 	version_read.open("ver.txt");
-	if (version_read.fail())
-	{
-		console << con::error << con::func << "there is no ver.txt" << con::endl;
-		console << con::info << con::func << "default ver.txt file is created" << con::endl;
-
-		version_read.clear();
-		version_read.close();
-		version_write.open("ver.txt");
-		version_write << DEFAULTVER << '\n' << DEFAULTBUILDNUMBER;
-		version_write.close();
-		version = DEFAULTVER;
-		build_number = DEFAULTBUILDNUMBER;
-	}
-
-	else
-	{
-		version_read >> version >> build_number;
-		build_number++;
-		version_read.close();
-		version_write.open("ver.txt", ios::trunc);
-		version_write << version << '\n' << build_number;
-		version_write.close();
-	}
+	version_read >> version >> build_number;
+	build_number++;
+	version_read.close();
+	version_write.open("ver.txt", ios::trunc);
+	version_write << version << '\n' << build_number;
+	version_write.close();
+	
 
 	pName = "Rendering Engine " + version + " build " + string(itoa(build_number, build_number_tmp, 10));
 	console << con::info << con::func << "program info is ready" << con::endl;
 
-	try
+	//	Window Class Initialization
+	//
+	hInstance = _hInstance;	prevInstance = _prevInstance;
+	cmdLine = _cmdLine;	showCmd = _showCmd;
+
+	GetCurrentDirectory(MAX_PATH, pPath);
+	ZeroMemory(&msg, sizeof(MSG));
+
+	wc.style = CS_HREDRAW | CS_VREDRAW;
+	wc.lpfnWndProc = (WNDPROC)WndProc;
+	wc.cbClsExtra = 0;
+	wc.cbWndExtra = 0;
+	wc.hInstance = hInstance;
+	wc.hIcon = LoadIcon(0, IDI_APPLICATION);
+	wc.hCursor = LoadCursor(0, IDC_ARROW);
+	wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+	wc.lpszMenuName = 0;
+	wc.lpszClassName = pName.c_str();
+	if (!RegisterClass(&wc))
 	{
-		//	Window Class Initialization
-		//
-		hInstance = _hInstance;	prevInstance = _prevInstance;
-		cmdLine = _cmdLine;	showCmd = _showCmd;
-
-		GetCurrentDirectory(MAX_PATH, pPath);
-		ZeroMemory(&msg, sizeof(MSG));
-
-		wc.style = CS_HREDRAW | CS_VREDRAW;
-		wc.lpfnWndProc = (WNDPROC)WndProc;
-		wc.cbClsExtra = 0;
-		wc.cbWndExtra = 0;
-		wc.hInstance = hInstance;
-		wc.hIcon = LoadIcon(0, IDI_APPLICATION);
-		wc.hCursor = LoadCursor(0, IDC_ARROW);
-		wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-		wc.lpszMenuName = 0;
-		wc.lpszClassName = pName.c_str();
-		if (!RegisterClass(&wc))
-		{
-			console << con::info << con::func << "RegisterClass() - failed" << con::endl;
-			throw RUNTIME_ERROR(CRITICAL_WINDOW_ERROR);
-		}
-
-		hwnd = CreateWindow(pName.c_str(), pName.c_str(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, winSize.right, winSize.bottom, 0, 0, hInstance, 0);
-		if (!hwnd)
-		{
-			console << con::info << con::func << "CreateWindow() - failed" << con::endl;
-			throw RUNTIME_ERROR(CRITICAL_WINDOW_ERROR);
-		}
-
-		MoveWindow(hwnd, 0, 0, winSize.right, winSize.bottom, TRUE);
-		ShowWindow(hwnd, SW_SHOW); //	SW_SHOW, SW_SHOWMAXIMIZED
-		console.RestoreFunction();
+		console << con::info << con::func << "RegisterClass() - failed" << con::endl;
+		throw RUNTIME_ERROR(CRITICAL_WINDOW_ERROR);
 	}
-	catch (RUNTIME_ERROR &e)
+
+	hwnd = CreateWindow(pName.c_str(), pName.c_str(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, winSize.right, winSize.bottom, 0, 0, hInstance, 0);
+	if (!hwnd) 
 	{
-		if (e.error == CRITICAL_WINDOW_ERROR)
-		{
-			console << con::error << con::func << e.info() << con::endl;
-			memory.Release();
-			cpu.Release();
-			pEndWaitTime = pEndWaitTime / 1000;
-			while (pEndWaitTime > 0)
-			{
-				console << con::info << con::func << "End Program in " << pEndWaitTime << "sec\n";
-				Sleep(1000);
-				pEndWaitTime--;
-			}
-			console.Release();
-			throw e;
-		}
+		console << con::info << con::func << "CreateWindow() - failed" << con::endl;
+		throw RUNTIME_ERROR(CRITICAL_WINDOW_ERROR);
 	}
+
+	MoveWindow(hwnd, 0, 0, winSize.right, winSize.bottom, TRUE);
+	ShowWindow(hwnd, SW_SHOW); //	SW_SHOW, SW_SHOWMAXIMIZED
+	console.RestoreFunction();
 }
 
 void GAMESYSTEM::D3DEffectInitialize()
@@ -236,10 +189,6 @@ void GAMESYSTEM::ShaderLoad(string _name, LPD3DXEFFECT& shader)
 	}
 }
 
-
-void GAMESYSTEM::Test()
-{
-}
 
 //	Public Functions
 //
